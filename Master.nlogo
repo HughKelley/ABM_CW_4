@@ -18,18 +18,19 @@ globals
 ; patch state variables
 patches-own
 [
-  space
-  occupants
+  space   ; max amount of turtles that can study there
+  occupants ; current number of turtles studying there
 ]
 
 ; turtle state variables
 turtles-own
 [
-  work
-  status
-  target
-  origin
-  itinerary
+  work ; amount of ticks they still need to occupy a study patch
+  status ; studying or searching
+  target ; the next study patch they will check
+  origin-x
+  origin-y  ; this is where the turtle appears during setup and needs to return to
+  itinerary ; this is an ordered list of places to check for space
 ]
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -45,11 +46,34 @@ to setup
 	; create turtles
 
   let k students / 5
-  crt k [ setxy min-pxcor min-pycor ]
-  crt k [ setxy min-pxcor max-pycor ]
-  crt k [ setxy max-pxcor min-pycor ]
-  crt k [ setxy max-pxcor max-pycor ]
-  crt k [ setxy random-pxcor random-pycor ]
+  crt k [
+    set origin-x min-pxcor
+    set origin-y min-pycor
+    setxy min-pxcor min-pycor
+  ]
+
+  crt k [
+    set origin-x min-pxcor
+    set origin-y max-pycor
+    setxy min-pxcor max-pycor
+  ]
+
+  crt k [
+    set origin-x max-pxcor
+    set origin-y min-pycor
+    setxy max-pxcor min-pycor
+  ]
+
+  crt k [
+    set origin-x max-pxcor
+    set origin-y max-pycor
+    setxy max-pxcor max-pycor
+  ]
+
+  crt k [
+    set origin-x random-pxcor
+    set origin-y random-pycor
+    setxy origin-x origin-y ]
 
   ask turtles [
     set color red
@@ -130,24 +154,50 @@ to proximity
 
   ; sets turtle target patch as the closest patch with possible space
 
+  let patch-list patches with [space > 0]
+  let dist [distance myself] of patch-list
+
+
 end
 
 
-to most
+to-report most
 
   ; sets turtle target toward patch with max space
+  ; let place-list list patches with [space > 0]
+
+  let list-a sort-on [space] (patches with [space > 0] )
+
+  report list-a
 
 end
 
-to availability
+to-report perc-taken [a]
+
+  let a-perc ( ( [space] of a ) / ([occupancy] of a))
+  report a-perc
+
+end
+
+to-report availability
 
   ; sets turtle target as patch with max space/occupancy
+
+  ; let place-list patches with [space > 0]
+
+  let sorted-patches sort-on [ ( (space - occupants) / space ) ] patches with [space > 0]
+
+  ;let sort-place sort-by [ [ a b ] -> perc-taken a > perc-taken b ] [patches with [space > 0] ]
+  ;sort-by [ [a b] -> of a / [occupancy] of a > [space] of b / [occupancy] of b]  place-list
+
+  report sorted-patches
 
 end
 
 to value
 
-  ; set turtle target toward patch with best combined proximity +
+  ; set turtle target toward patch with best combined proximity + space
+  ; could allow user to set the weighting...
 
 end
 
@@ -165,7 +215,6 @@ to-report optimal
   report max (list max-work time)
 
 end
-
 
 @#$#@#$#@
 GRAPHICS-WINDOW
