@@ -13,24 +13,25 @@ globals
   ; spaces ; number of total study spaces
   ; places ; total number of patches with study space
   ; work-mean ;amount of work the average turtle has to do
+  ; step-size ; number of steps a turtle can take in one tick
 ]
 
 ; patch state variables
 patches-own
 [
-  space   ; max amount of turtles that can study there
+  space     ; max amount of turtles that can study there
   occupants ; current number of turtles studying there
 ]
 
 ; turtle state variables
 turtles-own
 [
-  work ; amount of ticks they still need to occupy a study patch
-  status ; studying or searching
-  target ; the next study patch they will check
-  origin-x
+  work      ; amount of ticks they still need to occupy a study patch
+  working   ; studying: true or searching: false
+  target    ; the next study patch they will check taken from the itinerary
+  itinerary ; this is a list of places to check for space
+  origin-x  ; x value of origin
   origin-y  ; this is where the turtle appears during setup and needs to return to
-  itinerary ; this is an ordered list of places to check for space
 ]
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -73,12 +74,15 @@ to setup
   crt k [
     set origin-x random-pxcor
     set origin-y random-pycor
-    setxy origin-x origin-y ]
+    setxy origin-x origin-y
+  ]
 
   ask turtles [
     set color red
     let b 2 *  work-mean + 1
     set work random b
+    set working false
+    set target 0
   ]
 	; reset time state
 
@@ -92,79 +96,151 @@ end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; describe process for "running" model
-
 to go
 	
   ; create some turtles if max has not been reached
-
-
-
 
 	; tell turtles to do their thing
 	ask turtles
 	[
 		move
 	]
+  ; update search distance
+  ; update occupancy
+  ; update search time
+  ; update total work accomplished
 
 	; set time constraint
-  	if ticks >= 1000	[stop]	; need limiting value
+  if ticks >= 10000	[stop]	; need limiting value
 
-
-end
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; print live model values
-to-report something                                 ;replace something with name for what you want to report
-
-
-	report 		1			; what to "return"
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; decribe what turtles are supposed to do while "moving"
 to move
 
-  ; if turtles are
+  ; if work-remaining > 0:
+  ifelse work > 0
+  [
+    ifelse working = false
+    [
+      ifelse target = 0
+      [
+        ;set target study patch according to search function
+        ;set heading toward that patch
+        ;move (<= one "step") toward target-patch
+      ]
+      [
+        ;else (if target is set)
+        let i 0
+        while [i < step-size]
+        [
+          ifelse patch-here = target
+          [
+            ; exit while
+            set i step-size
 
-;  if work-remaining > 0:
-;if state-boolean != studying:
-;if target-patch == NULL:
-;set target study patch according to search function
-;set heading toward that patch
-;move (<= one "step") toward target-patch
-;else:
-;move (<= one "step") toward target-patch
-;if turtle current patch == a study patch:
-;if other turtles on current patch < patch-capacity:
-;boolean = studying
-;patch-occupancy = patch-occupancy + 1
-;else:
-;set turtle work-remaining = work remaining - 1
-;else:
-;if current patch == origin patch:
-;turtle die
-;else:
-;set headin and target-patchg to origin tube station
-;take max step
+            ifelse space-check patch-here
+            [
+              ; set working to true
+            ]
+            [
+              ;else ( if the space-check was false)
+              ; set new target space
+              ;
+            ]
+          ]
+          [
+            ; else (if current patch is target)
+            set heading towards target
+            fd 1
+            set i (i + 1)
+          ]
+
+          ; set heading towards target patch
+          ; step one patch
+
+        ]    ; end while
+
+
+
+
+
+
+      ]
+    ]
+    [
+      ;else (if working is true)
+
+      ;if other turtles on current patch < patch-capacity:
+      ;boolean = studying
+      ;patch-occupancy = patch-occupancy + 1
+      ;else
+      ;set turtle work-remaining = work remaining - 1
+
+      set work (work - 1)
+    ]
+  ]
+  [  ;else (if work remaining is 0)
+    ;if current patch == origin patch:
+        ;turtle die
+    ;else:
+        ;set headin and target-patchg to origin tube station
+        ;take max step
+  ]
+
+
+
+
+
 
 
 end
 
-to proximity
+to-report space-check [patch-of-turtle]
+
+  ifelse (space of patch-of-turtle) > (occupancy of patch-of-turtle)
+  [
+    report true
+  ]
+  [
+    ; else (if there isn't space)
+    report false
+  ]
+
+
+end
+
+to-report optimal
+
+  let total-work sum [work] of turtles
+  let total-space sum [space] of patches
+
+  let h total-work mod total-space
+
+  let time ( ( total-work - h ) / total-space ) + 1
+
+  let max-work max [work] of turtles
+
+  report max (list max-work time)
+
+end
+
+; functions below report lists of place patches orderd by various characteristics
+
+; these maybe should use the turtle memory...
+
+to-report proximity
 
   ; sets turtle target patch as the closest patch with possible space
-
-  let patch-list patches with [space > 0]
-  let dist [distance myself] of patch-list
-
-
+  let sorted-patches sort-on [ (distance myself) ] patches with [space > 0]
+  show sorted-patches
+  report sorted-patches
 end
-
 
 to-report most
 
   ; sets turtle target toward patch with max space
-
   ; let place-list list patches with [space > 0]
 
   let list-a sort-on [space] (patches with [space > 0] )
@@ -183,10 +259,9 @@ end
 to-report availability
 
   ; sets turtle target as patch with max space/occupancy
-
   ; let place-list patches with [space > 0]
 
-  let sorted-patches sort-on [ (space  occupants ) ] patches with [space > 0]
+  let sorted-patches sort-on [ ( (space - occupants) / space ) ] patches with [space > 0]
 
   ;let sort-place sort-by [ [ a b ] -> perc-taken a > perc-taken b ] [patches with [space > 0] ]
   ;sort-by [ [a b] -> of a / [occupancy] of a > [space] of b / [occupancy] of b]  place-list
@@ -202,20 +277,6 @@ to value
 
 end
 
-to-report optimal
-
-  let total-work sum [work] of turtles
-  let total-space sum [space] of patches
-
-  let h total-work mod total-space
-
-  let time ( ( total-work - h ) / total-space ) + 1
-
-  let max-work max [work] of turtles
-
-  report max (list max-work time)
-
-end
 
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -342,10 +403,10 @@ PENS
 "default" 1.0 0 -16777216 true "" "plot count turtles"
 
 BUTTON
-35
-306
-99
-339
+34
+333
+96
+372
 Setup
 setup
 NIL
@@ -360,9 +421,9 @@ NIL
 
 BUTTON
 35
-360
+386
 98
-393
+419
 NIL
 Go
 T
@@ -374,6 +435,21 @@ NIL
 NIL
 NIL
 1
+
+SLIDER
+17
+279
+189
+312
+step-size
+step-size
+1
+20
+5.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
