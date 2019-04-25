@@ -4,8 +4,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; throw in a histogram of the distribution of study spaces across patches?
 
-;all global variables
-;for variables set from GUI, include but comment out
+; all global variables
+; for variables set from GUI, include but comment out
 globals
 [
   occupancy            ; of study spaces filled
@@ -29,6 +29,7 @@ patches-own
 [
   space     ; max amount of turtles that can study there
   occupants ; current number of turtles studying there
+  ratio     ; percentage of open space
 ]
 
 ; turtle state variables
@@ -108,6 +109,7 @@ to initialize
   set work random b
   set working false
   set itinerary (patches with [space > 0])
+  ; set itinerary perc-taken itinerary
   set itinerary most itinerary ;
   set target item 0 itinerary
   set itinerary remove-item 0 itinerary
@@ -160,6 +162,7 @@ to patch-status
     ; show (count turtles-here)
     let turtle-gang turtles-here with [working = true]
     set occupants (count turtle-gang)
+    set ratio (([space] of self - [occupants] of self ) / [space] of self)
   ]
 
 end
@@ -202,11 +205,14 @@ to move
 
       ifelse target = nobody
       [
-        show "target is empty"
+        ; show "target is empty"
 
-        ifelse empty? itinerary
+        ifelse itinerary = []
         [
-          show "itinerary is empty"
+          ; show "itinerary is empty"
+          ; set itinerary most itinerary
+          set itinerary (patches with [space > 0])
+          ; set itinerary perc-taken itinerary
           set itinerary most itinerary
           set target item 0 itinerary
           set itinerary remove-item 0 itinerary
@@ -214,7 +220,7 @@ to move
         [
           ; else (if itinerary is not 0)
 
-          show "changing target to next item on itinerary"
+          ; show "changing target to next item on itinerary"
 
           set target item 0 itinerary
           ; show target
@@ -223,50 +229,35 @@ to move
 
         action
 
-        ;set target study patch according to search function
-        ;set heading toward that patch
-        ;move (<= one "step") toward target-patch
+        ; set target study patch according to search function
+        ; set heading toward that patch
+        ; move (<= one "step") toward target-patch
       ]
-      [     ;else (if target is set)
+      [     ; else (if target is set)
         action
       ]
     ]
     [
-      ;else (if working is true)
-
-      ;show "working"
-
-      ;if other turtles on current patch < patch-capacity:
-      ;boolean = studying
-      ;patch-occupancy = patch-occupancy + 1
-      ;else
-      ;set turtle work-remaining = work remaining - 1
+      ; else (if working is true)
 
       set work (work - 1)
       set work-done (work-done + 1)
     ]
   ]
-  [  ;else (if work remaining is 0)
+  [  ; else (if work remaining is 0)
 
-    ;show "done with work"
-
-    ;if current patch == origin patch:
+    ; show "done with work"
 
     ifelse patch-here = origin
     [
-        die      ;turtle die
-
+        die
     ]
     [
       ; else (if not at origin patch)
-      ;set headin and target-patchg to origin tube station
-      ;take max step
 
       set target origin
 
       action
-
-
     ]
   ]
 
@@ -288,34 +279,22 @@ to action
 
             ifelse space-check patch-here
             [
-              show "space found"
+              ; show "space found"
               set working true
-
-              ; set working to true
-
             ]
             [ ; else (if there is no space)
-              ;show "no space here"
+              ; show "no space here"
 
               set target nobody
-
-              ; else ( if the space-check was false)
-              ; set new target space
-              ; pop that space off front of list
-
             ]
           ]
-          [        ; else (if current patch is target)
-            ;show "target exists"
+          [ ; else (if current patch is target)
+            ; show "target exists"
 
             set heading towards target
             fd 1
             set i (i + 1)
           ]
-
-          ; set heading towards target patch
-          ; step one patch
-
         ]    ; end while
 
 end
@@ -326,36 +305,29 @@ to-report space-check [patch-of-turtle]
   let x [space] of patch-of-turtle
   let y [occupants] of patch-of-turtle
 
-  show "space check: total patch space:"
-  show x
-
-  show "space check: total space occupants:"
-  show y
+  ; show "space check: total patch space:"
+  ; show x
+  ; show "space check: total space occupants:"
+  ; show y
 
   ifelse ([space] of patch-of-turtle) > ([occupants] of patch-of-turtle)
   [
-    show "space check: this patch is not full commence studying"
+    ; show "space check: this patch is not full commence studying"
     report true
 
   ]
   [
     ; else (if there isn't space)
-    show "space check: this patch is full, find another"
+    ; show "space check: this patch is full, find another"
     report false
   ]
-
-
 end
 
 to-report optimal
 
   set total-work sum [work] of turtles
-  ; let total-space sum [space] of patches
-
   let h total-work mod total-space
-
   let time ( ( total-work - h ) / total-space ) + 1
-
   let max-work max [work] of turtles
 
   report max (list max-work time)
@@ -366,10 +338,10 @@ end
 
 ; these maybe should use the turtle memory...
 
-to-report proximity
+to-report proximity [a]
 
   ; sets turtle target patch as the closest patch with possible space
-  let sorted-patches sort-on [ (distance myself) ] patches with [space > 0]
+  let sorted-patches sort-on [ (-1) * (distance myself) ] a
   ; show sorted-patches
   report sorted-patches
 end
@@ -379,9 +351,9 @@ to-report most [a]
   ; sets turtle target toward patch with max space
   ; let place-list list patches with [space > 0]
 
-  let ordered-a sort-on [space] (a)
+  let ordered-a sort-on [(-1) * space] (a)
 
-  ;let list-a sort-on [space] (patches with [space > 0] )
+  ; let list-a sort-on [space] (patches with [space > 0] )
 
   report ordered-a
 
@@ -389,20 +361,25 @@ end
 
 to-report perc-taken [a]
 
-  let a-perc ( ( [space] of a ) / ([occupancy] of a))
-  report a-perc
+  ; sort on total space or percentage space available
+  ifelse total-occupants = 0
+  [
+    let ordered-a sort-on [(-1) * space] (a)
+    report ordered-a
+  ]
+  [
+    let ordered-a sort-on [(-1) * ratio] (a)
+    report ordered-a
+  ]
+
+  ; let a-perc ( ( [space] of a ) / ([occupancy] of a))
 
 end
 
-to-report availability
+; sort by absolute number of seats available
+to-report availability [a]
 
-  ; sets turtle target as patch with max space/occupancy
-  ; let place-list patches with [space > 0]
-
-  let sorted-patches sort-on [ ( (space - occupants) / space ) ] patches with [space > 0]
-
-  ;let sort-place sort-by [ [ a b ] -> perc-taken a > perc-taken b ] [patches with [space > 0] ]
-  ;sort-by [ [a b] -> of a / [occupancy] of a > [space] of b / [occupancy] of b]  place-list
+  let sorted-patches sort-on [ ( space - occupants ) ] a
 
   report sorted-patches
 
@@ -481,7 +458,7 @@ students
 students
 0
 5000
-100.0
+500.0
 10
 1
 NIL
@@ -603,6 +580,16 @@ NIL
 NIL
 NIL
 1
+
+CHOOSER
+57
+530
+195
+575
+search-type
+search-type
+"a" "b" "c" "d"
+0
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -950,6 +937,31 @@ NetLogo 6.0.4
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <metric>count turtles</metric>
+    <enumeratedValueSet variable="step-size">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="search-type">
+      <value value="&quot;a&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="spaces">
+      <value value="35"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="students">
+      <value value="500"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="places">
+      <value value="5"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="work-mean">
+      <value value="100"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
