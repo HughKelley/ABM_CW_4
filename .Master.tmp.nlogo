@@ -8,12 +8,20 @@
 ;for variables set from GUI, include but comment out
 globals
 [
-  occupancy ; of study spaces filled
-  optimal-ticks ; if search costs were 0 how long would it take for the work to be accomplished.
-  ; spaces ; number of total study spaces
-  ; places ; total number of patches with study space
-  ; work-mean ;amount of work the average turtle has to do
-  ; step-size ; number of steps a turtle can take in one tick
+  occupancy            ; of study spaces filled
+  optimal-ticks        ; if search costs were 0 how long would it take for the work to be accomplished.
+  work-done            ; work completed so far
+  work-sum             ; sum of turtle work variable
+  test-variable        ; for debugging
+  test                 ; for debugging
+  total-space          ; sum of patch [space ]
+  total-occupants      ; sum of patch [occupants]
+  percentage-occupied  ; total occupants / total space
+  total-work           ; sum of turtle [work]
+  ; spaces             ; number of total study spaces
+  ; places             ; total number of patches with study space
+  ; work-mean          ; amount of work the average turtle has to do
+  ; step-size          ; number of steps a turtle can take in one tick
 ]
 
 ; patch state variables
@@ -30,8 +38,7 @@ turtles-own
   working   ; studying: true or searching: false
   target    ; the next study patch they will check taken from the itinerary
   itinerary ; this is a list of places to check for space
-  origin-x  ; x value of origin
-  origin-y  ; this is where the turtle appears during setup and needs to return to
+  origin    ; this is where the turtle appears during setup and needs to return to
 ]
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -40,65 +47,77 @@ to setup
 	
 	;clear all
 	ca
+
+  ; setup patches
   let j 2 * spaces
   ask n-of places patches [ set space random j ]
   ask patches [set pcolor scale-color green space 0 j]
 
-	; create turtles
+  ; show "patches set"
 
+	; create turtles
   let k students / 5
   crt k [
-    set origin-x min-pxcor
-    set origin-y min-pycor
     setxy min-pxcor min-pycor
   ]
 
   crt k [
-    set origin-x min-pxcor
-    set origin-y max-pycor
     setxy min-pxcor max-pycor
   ]
 
   crt k [
-    set origin-x max-pxcor
-    set origin-y min-pycor
     setxy max-pxcor min-pycor
   ]
 
   crt k [
-    set origin-x max-pxcor
-    set origin-y max-pycor
     setxy max-pxcor max-pycor
   ]
 
   crt k [
-    set origin-x random-pxcor
-    set origin-y random-pycor
-    setxy origin-x origin-y
+    setxy random-pxcor random-pycor
   ]
 
-  ask turtles [
-    set color red
-    let b 2 *  work-mean + 1
-    set work random b
-    set working false
-    set target 0
+  ; show "turtles created"
+
+  ask turtles
+  [
+    initialize
   ]
-	; reset time state
+
+
+  set work-done 0
+  set work-sum (sum [work] of turtles)
+  set total-space (sum [space] of patches)
 
   set optimal-ticks optimal
   print "optimal time required is: "
   print optimal-ticks
 
+  ; reset time state
 	reset-ticks
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; set a bunch of turtle variables
+
+to initialize
+
+  set color red
+  let b 2 *  work-mean + 1
+  set work random b
+  set working false
+  set itinerary (patches with [space > 0])
+  set itinerary most itinerary ;
+  set target item 0 itinerary
+  set itinerary remove-item 0 itinerary
+  set origin patch-here
 
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; describe process for "running" model
 to go
-	
-  ; create some turtles if max has not been reached
 
 	; tell turtles to do their thing
 	ask turtles
@@ -110,28 +129,155 @@ to go
   ; update search time
   ; update total work accomplished
 
+  show "work done so far: "
+
+  show work-done
+  show "total work to be done"
+  show work-sum
+
+  patch-status
+  patch-summary
+
+  ; this stops the sim too early because not all turtles have returned to origin.
+
+  if count turtles = 0
+  [
+    show "work done all turtles returned to origin"
+    stop
+  ]
+
 	; set time constraint
   if ticks >= 10000	[stop]	; need limiting value
 
 end
 
+
+
+to patch-status
+
+  ask patches with [space > 0]
+  [
+    ; show (count turtles-here)
+    let turtle-gang turtles-here with [working = true]
+    set occupants (count turtle-gang)
+  ]
+
+end
+
+to patch-summary
+
+
+  set total-occupants (sum [occupants] of patches)
+
+  show "total space"
+  show total-space
+
+  show "total occupied space"
+  show total-occupants
+
+  set percentage-occupied round (total-occupants / total-space)
+
+  show "percentage occupancy"
+  show (percentage-occupied)
+
+end
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; decribe what turtles are supposed to do while "moving"
 to move
 
+  patch-status
+
   ; if work-remaining > 0:
   ifelse work > 0
   [
+    ; show "work remaining"
+    ; show work
+
     ifelse working = false
     [
-      ifelse target = 0
+      ; show "not working"
+
+      ifelse target = nobody
       [
+        show "target is empty"
+
+        ifelse empty? itinerary
+        [
+          show "itinerary is empty"
+          set itinerary most itinerary
+          set target item 0 itinerary
+          set itinerary remove-item 0 itinerary
+        ]
+        [
+          ; else (if itinerary is not 0)
+
+          show "changing target to next item on itinerary"
+
+          set target item 0 itinerary
+          ; show target
+          set itinerary remove-item 0 itinerary
+        ]
+
+        action
+
         ;set target study patch according to search function
         ;set heading toward that patch
         ;move (<= one "step") toward target-patch
       ]
-      [
-        ;else (if target is set)
+      [     ;else (if target is set)
+        action
+      ]
+    ]
+    [
+      ;else (if working is true)
+
+      ;show "working"
+
+      ;if other turtles on current patch < patch-capacity:
+      ;boolean = studying
+      ;patch-occupancy = patch-occupancy + 1
+      ;else
+      ;set turtle work-remaining = work remaining - 1
+
+      set work (work - 1)
+      set work-done (work-done + 1)
+    ]
+  ]
+  [  ;else (if work remaining is 0)
+
+    ;show "done with work"
+
+    ;if current patch == origin patch:
+
+    ifelse patch-here = origin
+    [
+        die      ;turtle die
+
+    ]
+    [
+      ; else (if not at origin patch)
+      ;set headin and target-patchg to origin tube station
+      ;take max step
+
+      set target origin
+
+      action
+
+
+    ]
+  ]
+
+end
+
+
+to action
+
+        ; show "target is set"
+        ; show target
+
         let i 0
         while [i < step-size]
         [
@@ -142,16 +288,26 @@ to move
 
             ifelse space-check patch-here
             [
+              show "space found"
+              set working true
+
               ; set working to true
+
             ]
-            [
-              ;else ( if the space-check was false)
+            [ ; else (if there is no space)
+              ;show "no space here"
+
+              set target nobody
+
+              ; else ( if the space-check was false)
               ; set new target space
-              ;
+              ; pop that space off front of list
+
             ]
           ]
-          [
-            ; else (if current patch is target)
+          [        ; else (if current patch is target)
+            ;show "target exists"
+
             set heading towards target
             fd 1
             set i (i + 1)
@@ -162,49 +318,29 @@ to move
 
         ]    ; end while
 
-
-
-
-
-
-      ]
-    ]
-    [
-      ;else (if working is true)
-
-      ;if other turtles on current patch < patch-capacity:
-      ;boolean = studying
-      ;patch-occupancy = patch-occupancy + 1
-      ;else
-      ;set turtle work-remaining = work remaining - 1
-
-      set work (work - 1)
-    ]
-  ]
-  [  ;else (if work remaining is 0)
-    ;if current patch == origin patch:
-        ;turtle die
-    ;else:
-        ;set headin and target-patchg to origin tube station
-        ;take max step
-  ]
-
-
-
-
-
-
-
 end
+
 
 to-report space-check [patch-of-turtle]
 
-  ifelse (space of patch-of-turtle) > (occupancy of patch-of-turtle)
+  let x [space] of patch-of-turtle
+  let y [occupants] of patch-of-turtle
+
+  show "space check: total patch space:"
+  show x
+
+  show "space check: total space occupants:"
+  show y
+
+  ifelse ([space] of patch-of-turtle) > ([occupants] of patch-of-turtle)
   [
+    show "space check: this patch is not full commence studying"
     report true
+
   ]
   [
     ; else (if there isn't space)
+    show "space check: this patch is full, find another"
     report false
   ]
 
@@ -213,8 +349,8 @@ end
 
 to-report optimal
 
-  let total-work sum [work] of turtles
-  let total-space sum [space] of patches
+  set total-work sum [work] of turtles
+  ; let total-space sum [space] of patches
 
   let h total-work mod total-space
 
@@ -234,18 +370,20 @@ to-report proximity
 
   ; sets turtle target patch as the closest patch with possible space
   let sorted-patches sort-on [ (distance myself) ] patches with [space > 0]
-  show sorted-patches
+  ; show sorted-patches
   report sorted-patches
 end
 
-to-report most
+to-report most [a]
 
   ; sets turtle target toward patch with max space
   ; let place-list list patches with [space > 0]
 
-  let list-a sort-on [space] (patches with [space > 0] )
+  let ordered-a sort-on [space] (a)
 
-  report list-a
+  ;let list-a sort-on [space] (patches with [space > 0] )
+
+  report ordered-a
 
 end
 
@@ -276,8 +414,6 @@ to value
   ; could allow user to set the weighting...
 
 end
-
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
@@ -315,8 +451,8 @@ spaces
 spaces
 0
 5000
-1000.0
-10
+35.0
+1
 1
 NIL
 HORIZONTAL
@@ -330,23 +466,23 @@ places
 places
 0
 50
-20.0
+5.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-16
-172
-188
-205
+20
+760
+904
+793
 students
 students
 0
 5000
-1470.0
-100
+100.0
+10
 1
 NIL
 HORIZONTAL
@@ -360,7 +496,7 @@ work-mean
 work-mean
 0
 500
-150.0
+100.0
 10
 1
 NIL
@@ -445,11 +581,28 @@ step-size
 step-size
 1
 20
-5.0
+20.0
 1
 1
 NIL
 HORIZONTAL
+
+BUTTON
+39
+432
+118
+465
+Go Once
+Go
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
