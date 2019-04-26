@@ -18,6 +18,7 @@ globals
   total-occupants      ; sum of patch [occupants]
   percentage-occupied  ; total occupants / total space
   total-work           ; sum of turtle [work]
+  search-function      ; use to set the function used for searching dynamically
   ; spaces             ; number of total study spaces
   ; places             ; total number of patches with study space
   ; work-mean          ; amount of work the average turtle has to do
@@ -42,12 +43,42 @@ turtles-own
   origin    ; this is where the turtle appears during setup and needs to return to
 ]
 
+
+;just go crazy with the semicolons to highlight code that calls the search function
+
+; set search function
+; this isn't workable because of inability to pass arguments to a procedure called by "runresult"
+;to set-search
+;
+;  ifelse search-type = "proximity" [ set search-function "proximity"]
+;  [
+;    ifelse search-type = "most" [set search-function "most"]
+;    [
+;      ifelse search-type = "percent-taken" [set search-function "perc-taken"]
+;      [
+;        ifelse search-type = "absolute-availability" [set search-function "availability"]
+;        [
+;          ifelse search-type = "weighted" [set search-function "weighted"]
+;          [
+;            show "invalid search procedure specified"
+;          ] ; end error-catch else
+;        ] ; end fourth if
+;      ] ; end third if
+;    ] ; end second if
+;  ] ;end first if
+;end
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; initial setup conditions and procedure
 to setup
 	
 	;clear all
 	ca
+
+  ; define search function
+  ; set-search
+
 
   ; setup patches
   let j 2 * spaces
@@ -102,23 +133,43 @@ end
 
 ; set a bunch of turtle variables
 
+;to test
+
+
+;end
+
+
 to initialize
 
   set color red
   let b 2 *  work-mean + 1
   set work random b
   set working false
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
   set itinerary (patches with [space > 0])
+
   ; set itinerary perc-taken itinerary
-  set itinerary most itinerary ;
+  ; set itinerary most itinerary
+  set itinerary proximity itinerary
+
+  ; this doesn't work because run result can't use arguments to the reporter if the reporter is a string
+  ;set itinerary (runresult search-type itinerary) ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
   set target item 0 itinerary
   set itinerary remove-item 0 itinerary
   set origin patch-here
+  set heading towards target
 
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; describe process for "running" model
+
 to go
 
 	; tell turtles to do their thing
@@ -210,10 +261,22 @@ to move
         ifelse itinerary = []
         [
           ; show "itinerary is empty"
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
           ; set itinerary most itinerary
           set itinerary (patches with [space > 0])
+
           ; set itinerary perc-taken itinerary
-          set itinerary most itinerary
+;          set itinerary most itinerary
+          set itinerary proximity itinerary
+
+          ; runresult doens't accept parameter arguments
+          ;set itinerary (runresult search-type itinerary)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
           set target item 0 itinerary
           set itinerary remove-item 0 itinerary
         ]
@@ -336,14 +399,17 @@ end
 
 ; functions below report lists of place patches orderd by various characteristics
 
-; these maybe should use the turtle memory...
+; sort sorts smallest to largest so * -1 used where necessary
 
 to-report proximity [a]
 
+  show "sort on proximity"
+
   ; sets turtle target patch as the closest patch with possible space
-  let sorted-patches sort-on [ (-1) * (distance myself) ] a
+  let sorted-patches sort-on [ (distance myself) ] a
   ; show sorted-patches
   report sorted-patches
+
 end
 
 to-report most [a]
@@ -380,15 +446,15 @@ end
 to-report availability [a]
 
   let sorted-patches sort-on [ ( space - occupants ) ] a
-
   report sorted-patches
 
 end
 
-to value
+to weighted
 
   ; set turtle target toward patch with best combined proximity + space
   ; could allow user to set the weighting...
+  ; not enough time, too complicted to do a parameter sweep anyway
 
 end
 @#$#@#$#@
@@ -584,12 +650,12 @@ NIL
 CHOOSER
 57
 530
-195
+215
 575
 search-type
 search-type
-"a" "b" "c" "d"
-0
+"proximity" "most" "percent-taken" "absolute-availability" "weighted"
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
