@@ -8,17 +8,16 @@
 ; for variables set from GUI, include but comment out
 globals
 [
-  occupancy            ; of study spaces filled
-  optimal-ticks        ; if search costs were 0 how long would it take for the work to be accomplished.
+;  optimal-ticks        ; if search costs were 0 how long would it take for the work to be accomplished.
   work-done            ; work completed so far
-  work-sum             ; sum of turtle work variable
-  test-variable        ; for debugging
-  test                 ; for debugging
   total-space          ; sum of patch [space ]
   total-occupants      ; sum of patch [occupants]
-  percentage-occupied  ; total occupants / total space
   total-work           ; sum of turtle [work]
-  search-function      ; use to set the function used for searching dynamically
+  ; occupancy            ; of study spaces filled
+  ; test-variable        ; for debugging
+  ; test                 ; for debugging
+  ; percentage-occupied  ; total occupants / total space
+  ; search-function      ; use to set the function used for searching dynamically
   ; spaces             ; number of total study spaces
   ; places             ; total number of patches with study space
   ; work-mean          ; amount of work the average turtle has to do
@@ -73,8 +72,14 @@ turtles-own
 ; initial setup conditions and procedure
 to setup
 	
-	;clear all
+
+  ; reset real-time value
+  reset-timer
+
+
+  	;clear all
 	ca
+
 
   ; define search function
   ; set-search
@@ -118,12 +123,12 @@ to setup
 
 
   set work-done 0
-  set work-sum (sum [work] of turtles)
+  set total-work (sum [work] of turtles)
   set total-space (sum [space] of patches)
 
-  set optimal-ticks optimal
-  print "optimal time required is: "
-  print optimal-ticks
+;  set optimal-ticks optimal
+  ; show "optimal time required is: "
+  ; show optimal-ticks
 
   ; reset time state
 	reset-ticks
@@ -141,7 +146,6 @@ end
 
 to initialize
 
-  set color red
   let b 2 *  work-mean + 1
   set work random b
   set working false
@@ -151,9 +155,9 @@ to initialize
 
   set itinerary (patches with [space > 0])
 
-  ; set itinerary perc-taken itinerary
-  ; set itinerary most itinerary
-  set itinerary proximity itinerary
+;   set itinerary perc-taken itinerary
+;   set itinerary most itinerary
+   set itinerary proximity itinerary
 
   ; this doesn't work because run result can't use arguments to the reporter if the reporter is a string
   ;set itinerary (runresult search-type itinerary) ;
@@ -163,7 +167,10 @@ to initialize
   set target item 0 itinerary
   set itinerary remove-item 0 itinerary
   set origin patch-here
+  if patch-here != target
+  [
   set heading towards target
+  ]
 
 end
 
@@ -182,20 +189,19 @@ to go
   ; update search time
   ; update total work accomplished
 
-  show "work done so far: "
+  ; show "work done so far: "
 
-  show work-done
-  show "total work to be done"
-  show work-sum
+  ; show work-done
+  ; show "total work to be done"
+  ; show total-work
 
-  patch-status
-  patch-summary
-
-  ; this stops the sim too early because not all turtles have returned to origin.
+;  patch-status
+  set total-occupants (sum [occupants] of patches)
+;  patch-summary
 
   if count turtles = 0
   [
-    show "work done all turtles returned to origin"
+    ; show "work done all turtles returned to origin"
     stop
   ]
 
@@ -218,23 +224,17 @@ to patch-status
 
 end
 
-to patch-summary
-
-
-  set total-occupants (sum [occupants] of patches)
-
-  show "total space"
-  show total-space
-
-  show "total occupied space"
-  show total-occupants
-
-  set percentage-occupied round (total-occupants / total-space)
-
-  show "percentage occupancy"
-  show (percentage-occupied)
-
-end
+; for debugging
+;to patch-summary
+;  set total-occupants (sum [occupants] of patches)
+;  show "total space"
+;  show total-space
+;  show "total occupied space"
+;  show total-occupants
+;  set percentage-occupied round (total-occupants / total-space)
+;  show "percentage occupancy"
+;  show (percentage-occupied)
+;end
 
 
 
@@ -268,7 +268,7 @@ to move
           ; set itinerary most itinerary
           set itinerary (patches with [space > 0])
 
-          ; set itinerary perc-taken itinerary
+;          set itinerary perc-taken itinerary
 ;          set itinerary most itinerary
           set itinerary proximity itinerary
 
@@ -386,16 +386,16 @@ to-report space-check [patch-of-turtle]
   ]
 end
 
-to-report optimal
-
-  set total-work sum [work] of turtles
-  let h total-work mod total-space
-  let time ( ( total-work - h ) / total-space ) + 1
-  let max-work max [work] of turtles
-
-  report max (list max-work time)
-
-end
+;to-report optimal
+;
+;  set total-work sum [work] of turtles
+;  let h total-work mod total-space
+;  let time ( ( total-work - h ) / total-space ) + 1
+;  let max-work max [work] of turtles
+;
+;  report max (list max-work time)
+;
+;end
 
 ; functions below report lists of place patches orderd by various characteristics
 
@@ -403,7 +403,7 @@ end
 
 to-report proximity [a]
 
-  show "sort on proximity"
+  ; show "sort on proximity"
 
   ; sets turtle target patch as the closest patch with possible space
   let sorted-patches sort-on [ (distance myself) ] a
@@ -494,7 +494,7 @@ spaces
 spaces
 0
 5000
-35.0
+500.0
 1
 1
 NIL
@@ -509,7 +509,7 @@ places
 places
 0
 50
-5.0
+10.0
 1
 1
 NIL
@@ -524,7 +524,7 @@ students
 students
 0
 5000
-500.0
+2000.0
 10
 1
 NIL
@@ -539,7 +539,7 @@ work-mean
 work-mean
 0
 500
-100.0
+60.0
 10
 1
 NIL
@@ -623,8 +623,8 @@ SLIDER
 step-size
 step-size
 1
-20
-20.0
+30
+10.0
 1
 1
 NIL
@@ -645,16 +645,6 @@ NIL
 NIL
 NIL
 NIL
-1
-
-CHOOSER
-57
-530
-215
-575
-search-type
-search-type
-"proximity" "most" "percent-taken" "absolute-availability" "weighted"
 1
 
 @#$#@#$#@
@@ -1004,27 +994,100 @@ NetLogo 6.0.4
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
+  <experiment name="experiment" repetitions="5" sequentialRunOrder="false" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
-    <metric>count turtles</metric>
+    <timeLimit steps="100000"/>
+    <metric>timer</metric>
+    <metric>ticks</metric>
+    <metric>total-occupants</metric>
+    <metric>total-space</metric>
+    <metric>work-sum</metric>
+    <metric>total-work</metric>
     <enumeratedValueSet variable="step-size">
-      <value value="20"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="search-type">
-      <value value="&quot;a&quot;"/>
+      <value value="5"/>
+      <value value="8"/>
+      <value value="10"/>
+      <value value="15"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="spaces">
-      <value value="35"/>
+      <value value="2500"/>
+      <value value="3000"/>
+      <value value="3500"/>
+      <value value="4000"/>
+      <value value="4500"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="students">
-      <value value="500"/>
+      <value value="15000"/>
+      <value value="17500"/>
+      <value value="20000"/>
+      <value value="25000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="places">
+      <value value="20"/>
+      <value value="30"/>
+      <value value="40"/>
+      <value value="50"/>
+      <value value="60"/>
+      <value value="70"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="work-mean">
+      <value value="30"/>
+      <value value="45"/>
+      <value value="60"/>
+      <value value="90"/>
+      <value value="120"/>
+      <value value="180"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="Basic 1" repetitions="5" sequentialRunOrder="false" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="100000"/>
+    <metric>timer</metric>
+    <metric>total-occupants</metric>
+    <metric>total-space</metric>
+    <metric>work-done</metric>
+    <metric>total-work</metric>
+    <enumeratedValueSet variable="step-size">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="spaces">
+      <value value="250"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="students">
+      <value value="1000"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="places">
       <value value="5"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="work-mean">
-      <value value="100"/>
+      <value value="60"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="Basic 2" repetitions="5" sequentialRunOrder="false" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="100000"/>
+    <metric>timer</metric>
+    <metric>total-occupants</metric>
+    <metric>total-space</metric>
+    <metric>work-done</metric>
+    <metric>total-work</metric>
+    <enumeratedValueSet variable="step-size">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="spaces">
+      <value value="500"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="students">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="places">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="work-mean">
+      <value value="60"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
