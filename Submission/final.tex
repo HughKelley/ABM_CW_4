@@ -58,44 +58,43 @@
 
 %%% The "real" document content comes below...
 
-\title{\vspace{-3.0cm}Title}
-\author{Author}
+\title{\vspace{-2.0cm}UCL Study Space Search Costs}
+
 %\date{} % Activate to display a given date or no date (if empty),
          % otherwise the current date is printed 
 
 \begin{document}
 \maketitle
 
-1505 words excluding headings, figures, and references. \\
+975 words excluding headings, figures, and references. \\
 
 \section{Introduction}
 
-Finding study space at UCL is \textit{difficult}.  How does the distributed structure of study space at UCL influence the search costs for students and the total usage of the space available? Additionally, how does the \textbf{UCL Go} study space app (pictured in Figure 1) affect search costs? 
-
-This research could inform decisions about the structure of study space and the selection of mobile applications for improving search outcomes.
-
-The ease with which heterogeneity can be introduced both for the study space structure, and student preferences is very useful. Second, ABM makes it easier to study emergent phenomenon involved with the effect of the UCL Go App providing the same information to a large number of agents, who then compete for study space, i.e. "flocking". The app could raise search times by misleading agents to seek out study spaces that will be filled by the time they arrive.   Finally, the graphical outputs of the model may make it more persuasive to the less technical decision makers who structure university space.\\
+This work uses agent based modeling to study how the structure of study space and the \textbf{UCL Go} study space app affect search costs.
 
 \section{Literature Review}
 
-Reservation systems alter the dynamics of the search for parking space \parencite{TasseronG.2017Upsr}. In that work, a subset of "car" agents shared parking spot availability information. Search times improved for connected cars but came at a cost to non-connected cars for no net social benefit. The key structural difference between the research proposed and the work cited is the bottom up granular parking information compared to the top down aggregate information shared by the UCL Go app.
-
-The big difference between the parking models and the model I'm using is that on street parking is less clustered than the library space. 
-
-The PARKAGENT model is done in ArcGIS and can efficiently record distributions as well as averages. Search function focuses on intersections as nodes, prioritizing by proximity to final destination. Also, the model is focused on the trade-off between proximity to final destination and finding a space, so a driver might drive past a space if they estimate that a space closer to their final destination is available. 
+Reservation systems alter the dynamics of the search for parking space \parencite{TasseronG.2017Upsr}. In that work, a subset of agents shared parking availability information. Search times improved for connected cars but  at a cost to non-connected cars for no net social benefit. The key structural difference between this research  and the work cited is the bottom up granular parking information compared to the top down information from the UCL Go app. That work relied upon an ABM developed by \cite{BenensonItzhak2008PAam} to model driver decisions at intersections and the trade-off between an available spot and the possibility of finding one closer to the final destinations. While this work is helpful, the differences between this and the search for study space are significant.  
 
 \section{Methodology}
 
-An agent based model was built in Netlogo and initially calibrated to approximate the distance, study space density, and student population of UCL. Table 1 contains the data for travel time between and search time within the major UCL study spaces. Important to note that search times range from 200 seats per minute in the Student center to 30 per minute in the Bartlett Library, and that a reasonably travel time diameter of campus is ~15 or 20 minutes walk. 
+An agent based model was built in Netlogo and calibrated to approximate the distance, study space density, and  population of UCL. Table 1 contains the data for travel time between and search time within major UCL study spaces. Search times range from 200 seats per minute in the Student center to 30 per minute in the Bartlett Library/ The diameter of campus is 15 or 20 minutes walking. 
 
+First, a minimum number of runs for parameters like UCL characteristics was found. 
+
+Then effect of scaling the model was considered. Actual parameter values for UCL would be probably 50-75\% of the 40,000 enrolled students searching the roughly 4,000 study spaces across campus in order to do at least 1-2 hours of work. Parameters of this magnitude were unfeasible so the model was scaled down, maintaining accurate ratio's where possible but reducing the number of students, spaces, places, and total work. Thus it was important to compare scales. 
+
+To investigate dispersion's effect search costs, density was changed.
+
+Overall, the model did not allow for a parameter sweep, so the methodology focused on investigating key concerns about drawing conclusions from the model and results are discussed in this context. 
 
 % table of data about campus walking times and library search times
 
-
 \begin{table}[]
+\centering
 \setlength\tabcolsep{0pt} % default value: 6pt
 \footnotesize
-\begin{tabular}{l|c|ccccccccc}
+\begin{tabular}{l|c|cccccc}
 Location 		& index \space & 1   & 2     				& 3 					& 4 					& 5 					& 6 \\ \hline
 Bart. Lib 		& 1 	& \fbox{69 \{2:00\}}& 4:30  				& 8:00*					& 9:01					& 8:30					& 5:00*	\\
 Student Ct. 	& 2 	& 4:30				& \fbox{647 \{3:00\}}	& 1:43					& 4:31					& 4:10					& 5:00* \\
@@ -111,24 +110,9 @@ Russell Sq 		& 9 	& 7:37				& 10:00*				& 12:00*				& 10:00*				& 13:00*				& 3:
 \\ * indicates walking time taken from Google Maps}}
 \end{table}
 
-The first step was to find a minimum number of runs for parameters reasonably close to UCL characteristics. 
-
-The second step was to find the effect of scaling the model. Actual parameter values for UCL would be probably 50-75\% of the 40,000 enrolled students searching the roughly 4,000 study spaces across campus in order to do at least 1-2 hours of work. Runtimes for parameters of this magnitude were unfeasible so the model had to be scaled down, maintaining accurate ratio's where possible but reducing the number of students, spaces, places, and total work to be accomplished. Thus it was important to check multiple scales for a difference in outcomes. 
-
-Then the density of study spaces was changed, to investigate how dispersion affects search costs.
-
-Overall, the model was too large to allow for an actual parameter sweep, so the methodology above focused on investigating the key concerns about drawing conclusions from the model and the results below are discussed in this context. 
-
-
 \section{Results}
 
-The results are found in tables 2 through 5. The key value in each table is the number of ticks required for all work to be ``completed.'' In addition, ``efficiency'' is calculated, which is the total work completed, divided by the number of turtles in the trial, multiplied by the number of ticks the model ran for. This has the value of adjusting for differing total amounts of work due to the random initialization of work amounts specified by the mean of a uniform distribution. The ``function'' row indicates which search function was used in the trial. $Most$ indicates that the turtles prioritized their search by the absolute value of spaces in a given patch. $Prox$ indicates that turtles prioritized their search by the total distance to the patch, closest unsearched patches checked first. $Perc$ indicates that turtles searched patches by order of percentage of seats available. Please see the ODD material for specifics of the implementation of these search functions. Lastly, trial values from one run are never included in the values of another run, so that the sample statistics are not biased towards each other, they are independent except that they are produced by the same process subject to parameter changes. This is an important factor in interpreting tables 2, 3, and 4, where the minimum required runs is being considered. 
-
-
-
-
-
-
+Results are found in tables 2-5. The key value in each table is the number of ticks required for all work to be ``completed.'' ``Efficiency'' is calculated, which is:  total work completed, / number of turtles X total ticks. This has the value of adjusting for differing total amounts of work due to the random initialization of work amounts. $Function$ indicates how agents searched for space. $Most$, agents searched by absolute value of spaces. $Prox$, agents searched by total distance to the patch. $Perc$ agents searched by percentage of seats available. The ODD and code includes implementation specifics. Lastly, trial values from one run are never included in the values of another run, so that the sample statistics are not biased towards each other. This is important for interpreting tables 2, 3, and 4, where  minimum required runs is considered. 
 
 % table of trial data
 
@@ -153,8 +137,6 @@ The results are found in tables 2 through 5. The key value in each table is the 
 \caption{Parameters and results of various trial sets discussed \\ \footnotesize In results, tick value is ``$mean \pm margin \: of \: error$''}
 \end{table}
 
-
-
 %redo with 10 trials each
 
 \begin{table}[]
@@ -177,7 +159,6 @@ The results are found in tables 2 through 5. The key value in each table is the 
 \end{tabular}
 \caption{Parameters and results of trials continued \\ \footnotesize In results, tick value is ``$mean \pm margin \: of \: error$''}
 \end{table}
-
 
 % basic 1 and 2 for 20 trials
 
@@ -202,9 +183,6 @@ The results are found in tables 2 through 5. The key value in each table is the 
 \caption{Parameters and results of trials continued \\ \footnotesize In results, tick value is ``$mean \pm margin \: of \: error$''}
 \end{table}
 
-
-
-
 %Basic 3 and 4 for 20 trials
 
 \begin{table}[]
@@ -228,6 +206,7 @@ The results are found in tables 2 through 5. The key value in each table is the 
 \caption{Parameters and results of trials continued \\ \footnotesize In results, tick value is ``$mean \pm margin \: of \: error$''}
 \end{table}
 
+% runs 5 and 6
 
 \begin{table}[]
 \footnotesize
@@ -250,46 +229,34 @@ The results are found in tables 2 through 5. The key value in each table is the 
 \caption{Parameters and results of trials continued \\ \footnotesize In results, tick value is ``$mean \pm margin \: of \: error$''}
 \end{table}
 
-
-\pagebreak
-
 \section{Analysis}
 
-The following is a series of observations drawn from tables 2 through 6, contextualized using the research question, model implementation and real world data. 
-
-First, in all of the trials, the margins of error for ticks required are higher than the author would prefer. This was limited by computing resources as each table took between 30 and 60 minutes to compute and computing time grew linearly with number of trials. Still, margins of error are small enough to allow for some basic conclusions to be drawn as follows. 
-
-Second, and most importantly, it cannot be concluded that information about the occupancy of a study location, like that provided by the UCL Go Study Space App,  improves on uninformed methods of search. 
-
-Third, proximity was, on average, the most efficient search method in every set of trials. 
-
-Fourth, results for the $most$ and $perc$ search functions are very similar. This is notable because of the way the model is implemented. Because at $tick \: 0$ occupancy of all patches is 0, turtles initially prioritize by the absolute value of study space in a patch. Thus at $tick \: 0$, $most$ and $perc$ are the same. It is only after at least one space has been occupied that the search functions diverge. Thus the differences in outcomes are driven by the results for turtles who do not find space at the first patch they search. This will be discussed in greater depth in the conclusions. 
-
-Fifth, comparing trial sets 19-21, 25-27, and 28-30 reveals the sensitivity of search time to the dispersion of study space over the environment. On average, the total study space in a trial is the number of places multiplied by the number of spaces (per place). Thus the three sets of trials increase the number of places, and decrease the number of spaces, holding total space roughly constant. As space becomes more distributed, turtles are on average, closer to study space anywhere in the environment, but can search fewer spaces in a given tick. In the results, it is clear that higher dispersion results in less efficient search for space with ticks required and efficiency falling as the dispersion increases. 
-
-Sixth, comparing margins of error for trials 1-3 with trials 4-6 and trials 7-9 with trials 10-12 and 13-15 with 16-18, a higher number of agents for the same number of trials reduces the margin of error. The ME's on the right are consistently smaller than those on the left of each table. to some extent a higher agent set gives more stable results. 
-
-Seventh, scaling the model up, moving closer to parameter values representative of UCL, increases the confidence allowed in the model outcome but does not change the overall results. Mean outcomes on the left and right sides of tables 2,3, and 4 are different but overall consistent, indicating that scaling the model down for computational reasons may not have had a negative effect on the reliability of it's predictions. 
-
-Eighth, XXXXXXXXXXXXXXXXXXXXX
 
 
+First, it cannot be concluded that information about the occupancy of a study location, like that provided by the UCL Go Study Space App, improves search efficiency. 
+
+Second, in all trial sets, margins of error are unfortunately high. This was limited by computing resources as each table took between 30 and 60 minutes to compute. Still, some basic conclusions can be drawn as follows. 
+
+Third, proximity was, on average, the most efficient  method in every trial set. 
+
+Fourth, results for the $most$ and $perc$ search functions are very similar. Using $perc$ agents initially prioritize by the absolute value of study space in a patch because at $tick \: 0$ occupancy of all patches is 0.  The search functions diverge only after one space has been occupied. Thus the differences in outcomes are driven by the results for turtles who do not find space at the first patch searched. 
+
+Fifth, comparing trial sets 19-21, 25-27, and 28-30 reveals the sensitivity of search time to the dispersion of study space. The total study space in a trial is the places parameter X spaces parameter. Thus the three sets of trials increase the number of places, and decrease the number of spaces, holding the total constant. Agents are on average, closer to study space anywhere in the environment, but search fewer spaces in a given tick when space is more distributed. It is clear that higher dispersion means less efficient search with ticks rising as dispersion increases. 
+
+Sixth, comparing margins of error for trials 1-3 with 4-6, 7-9 with 10-12, and 13-15 with 16-18, more agents for the same trials reduces the margin of error. The ME's on the right are smaller than those on the left of each table. 
+
+Finally, scaling the model up, moving closer to parameter values representative of UCL, increases the confidence allowed in the model outcome but overall results are consistent. Mean outcomes on the left and right sides of tables 2,3, and 4 display the same pattern, indicating that scaling the model down for computational reasons may not have had a negative effect on reliability. 
 
 \section{Conclusions}
 
-Thus, the key conclusion of this investigation is that the UCL study space App may not have a material impact on search times for study space while working towards more tightly clustered study spaces at major points across campus probably would reduce study times. This is reflected in the fact that search times for the newly built Student Center are better than for older places like the highly distributed space in the Main Library, the architecture of the university is slowly improving the student experience. 
+The key conclusion is that the UCL Study Space App may not have a material impact on search times for study space , whereas more tightly clustered study spaces may improve efficiency. AS search times for the newly built Student Center are better than for older places like the highly distributed space in the Main Library, the architecture of the university is improving the student experience. 
 
+As mentioned above, a key unrealistic feature of this model is agents arriving simultaneously. This heavily emphasizes the search behavior at $tick \: 0$, which for $most$ and $perc$ are the same. A model that included stochastically determined arrival time may allow for greater differentiation between the two search functions. 
 
-As mentioned above, a key unrealistic feature of this model is that all agents arrive simultaneously. This heavily emphasizes the search behavior at $tick \: 0$, which for $most$ and $perc$ are the same. A model that included stochastically determined arrival time or number may allow for greater differentiation between the two search functions. 
+Finally, further work on the effect of scaling a model of this nature would be valuable to confirm conclusions drawn.  
 
-Finally, further work on the effect of scaling a model of this nature would be valuable. it is hypothesized that scaling may begin to distort model conclusions as scale approached the zero lower bound in the sense that it would begin to be difficult to maintain ratios of spaces per environment distance, or students to space.  
-
-\nocite{*}
-
-\medskip
-
+\pagebreak
 
 \printbibliography
-
 
 \end{document}

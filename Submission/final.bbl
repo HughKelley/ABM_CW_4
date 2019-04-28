@@ -19,6 +19,57 @@
 
 \refsection{0}
   \datalist[entry]{nyt/global//global/global}
+    \entry{BenensonItzhak2008PAam}{article}{}
+      \name{author}{3}{}{%
+        {{uniquename=0,uniquepart=base,hash=5b3751a7d56364367a3651237a84ad32}{%
+           family={Benenson},
+           familyi={B\bibinitperiod},
+           given={Itzhak},
+           giveni={I\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=2,uniquepart=given,hash=2a0732997620f51d63bb776cfc161bb7}{%
+           family={Martens},
+           familyi={M\bibinitperiod},
+           given={Karel},
+           giveni={K\bibinitperiod},
+           givenun=2}}%
+        {{uniquename=0,uniquepart=base,hash=da7902cfcc3061395d25bf8c51b1f588}{%
+           family={Birfir},
+           familyi={B\bibinitperiod},
+           given={Slava},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {eng}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier Ltd}%
+      }
+      \strng{namehash}{7513983ca4c40a16553bc8004fcca033}
+      \strng{fullhash}{7513983ca4c40a16553bc8004fcca033}
+      \strng{bibnamehash}{7513983ca4c40a16553bc8004fcca033}
+      \strng{authorbibnamehash}{7513983ca4c40a16553bc8004fcca033}
+      \strng{authornamehash}{7513983ca4c40a16553bc8004fcca033}
+      \strng{authorfullhash}{7513983ca4c40a16553bc8004fcca033}
+      \field{sortinit}{B}
+      \field{sortinithash}{276475738cc058478c1677046f857703}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{In this paper, we present PARKAGENT, an agent-based, spatially explicit model for parking in the city. Unlike traditional parking models, PARKAGENT simulates the behavior of each driver in a spatially explicit environment and is able to capture the complex self-organizing dynamics of a large collective of parking agents within a non-homogeneous (road) space. The model generates distributions of key values like search time, walking distance, and parking costs over different driver groups. It is developed as an ArcGIS application, and can work with a practically unlimited number of drivers. The advantages of the model are illustrated using a real-life case from Tel Aviv. Taking detailed data from field surveys, the model is used to study the impact of additional parking supply in a residential area with a shortage of parking places. The PARKAGENT model shows that additional parking supply linearly affects the occurrence of extreme values, but has only a weak impact on the average search time for a parking place or the average walking distance between the parking place and the destination.}
+      \field{issn}{0198-9715}
+      \field{journaltitle}{Computers, Environment and Urban Systems}
+      \field{number}{6}
+      \field{title}{PARKAGENT: An agent-based model of parking in the city}
+      \field{volume}{32}
+      \field{year}{2008}
+      \true{nocite}
+      \field{pages}{431\bibrangedash 439}
+      \range{pages}{9}
+      \keyw{Parking ; Agent-Based Modeling ; Spatially Explicit Modeling ; Gis ; Residential Parking ; On-Street Parking}
+    \endentry
     \entry{TasseronG.2017Upsr}{article}{}
       \name{author}{2}{}{%
         {{uniquename=0,uniquepart=base,hash=64024e413f9f30a1311fa7e490ea59f4}{%
@@ -27,12 +78,12 @@
            given={G.},
            giveni={G\bibinitperiod},
            givenun=0}}%
-        {{uniquename=0,uniquepart=base,hash=2819427fd8c6508f6e68cd8d07676d77}{%
+        {{uniquename=2,uniquepart=given,hash=2819427fd8c6508f6e68cd8d07676d77}{%
            family={Martens},
            familyi={M\bibinitperiod},
            given={K.},
            giveni={K\bibinitperiod},
-           givenun=0}}%
+           givenun=2}}%
       }
       \list{publisher}{1}{%
         {Elsevier Ltd}%
