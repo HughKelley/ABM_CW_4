@@ -1,2 +1,9 @@
 *.tmp.nlogo
 *.csv
+*.aux
+*.bcf
+*.log
+*.pdf
+*.xml
+*.gz
+*.csv#

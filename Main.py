@@ -37,6 +37,26 @@ for df in list_of_dfs :
     df['percentage_work_completed'] = df['work_finished'] / df['total_work'] * 100
     df['occupancy_rate'] = df['total_occupants'] / df['spaces'] * 100
     
+# add function type
+    
+basic_1_most_data['type'] = "most"
+basic_1_prox_data['type'] = "prox"
+basic_1_perc_data['type'] = "perc"
+
+basic_2_most_data['type'] = "most"
+basic_2_prox_data['type'] = "prox"
+basic_2_perc_data['type'] = "perc"
+
+all_data_1 = basic_1_most_data.set_index(['type', 'step_size','spaces','students','places','work-mean','time','total_occupants','total_spaces','work_finished','total_work']).groupby('run_number')['step'].nlargest(1).reset_index()
+
+holder = basic_1_most_data.set_index(['type', 'step_size','spaces','students','places','work-mean','time','total_occupants','total_spaces','work_finished','total_work']).groupby('run_number')['step'].nlargest(1).reset_index()
+
+
+# for each dataframe, need to extract for each run, the values at the max tick. 
+    
+    
+    
+
 
 
 

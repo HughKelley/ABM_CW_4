@@ -1,0 +1,200 @@
+% !TEX TS-program = pdflatex
+% !TEX encoding = UTF-8 Unicode
+
+% This is a simple template for a LaTeX document using the "article" class.
+% See "book", "report", "letter" for other types of document.
+
+\documentclass[11pt]{article} % use larger type; default would be 10pt
+
+\usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
+\usepackage[backend=biber, style=authoryear]{biblatex}
+\addbibresource{bibliography.bib}
+%%% Examples of Article customizations
+% These packages are optional, depending whether you want the features they provide.
+% See the LaTeX Companion or other references for full information.
+
+%%% PAGE DIMENSIONS
+\usepackage{geometry} % to change the page dimensions
+\geometry{a4paper} % or letterpaper (US) or a5paper or....
+% \geometry{margin=2in} % for example, change the margins to 2 inches all round
+% \geometry{landscape} % set up the page for landscape
+%   read geometry.pdf for detailed page layout information
+
+%\usepackage{graphicx} % support the \includegraphics command and options
+
+\usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
+
+%%% PACKAGES
+\usepackage{caption, booktabs} % for much better looking tables
+\captionsetup{  justification = centering }
+\usepackage{array} % for better arrays (eg matrices) in maths
+\usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
+\usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
+\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+\usepackage{graphicx}
+\usepackage{rotating}
+\usepackage{multirow} % allows multiple rows per cell
+% These packages are all incorporated in the memoir class to one degree or another...
+
+%%% HEADERS & FOOTERS
+\usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
+\pagestyle{fancy} % options: empty , plain , fancy
+\renewcommand{\headrulewidth}{0pt} % customise the layout...
+\lhead{}\chead{}\rhead{}
+\lfoot{}\cfoot{\thepage}\rfoot{}
+
+%%% SECTION TITLE APPEARANCE
+\usepackage{sectsty}
+\allsectionsfont{\sffamily\mdseries\upshape} % (See the fntguide.pdf for font help)
+% (This matches ConTeXt defaults)
+
+%%% ToC (table of contents) APPEARANCE
+\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography in the ToC
+\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
+\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+
+%%% END Article customizations
+
+%%% The "real" document content comes below...
+
+\title{\vspace{-3.0cm}Title}
+\author{Author}
+%\date{} % Activate to display a given date or no date (if empty),
+         % otherwise the current date is printed 
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+Finding study space at UCL is \textit{difficult}.  How does the distributed structure of study space at UCL influence the search costs for students and the total usage of the space available? Additionally, how does the \textbf{UCL Go} study space app (pictured in Figure 1) affect search costs? 
+
+This research could inform decisions about the structure of study space and the selection of mobile applications for improving search outcomes.
+
+The ease with which heterogeneity can be introduced both for the study space structure, and student preferences is very useful. Second, ABM makes it easier to study emergent phenomenon involved with the effect of the UCL Go App providing the same information to a large number of agents, who then compete for study space, i.e. "flocking". The app could raise search times by misleading agents to seek out study spaces that will be filled by the time they arrive.   Finally, the graphical outputs of the model may make it more persuasive to the less technical decision makers who structure university space.\\
+
+\section{Literature Review}
+
+Reservation systems alter the dynamics of the search for parking space \parencite{TasseronG.2017Upsr}. In that work, a subset of "car" agents shared parking spot availability information. Search times improved for connected cars but came at a cost to non-connected cars for no net social benefit. The key structural difference between the research proposed and the work cited is the bottom up granular parking information compared to the top down aggregate information shared by the UCL Go app.
+
+The big difference between the parking models and the model I'm using is that on street parking is less clustered than the library space. 
+
+The PARKAGENT model is done in ArcGIS and can efficiently record distributions as well as averages. Search function focuses on intersections as nodes, prioritizing by proximity to final destination. Also, the model is focused on the trade-off between proximity to final destination and finding a space, so a driver might drive past a space if they estimate that a space closer to their final destination is available. 
+
+
+\section{Results}
+
+% table of data about campus walking times and library search times
+
+
+\begin{table}[]
+\footnotesize
+\setlength\tabcolsep{0pt} % default value: 6pt
+\begin{tabular}{l|c|ccccccccc}
+Location 		& index	& 1     			& 2     				& 3 					& 4 					& 5 					& 6 \\ \hline
+Bart. Lib 	& 1 	& \fbox{69 \{2:00\}}& 4:30  				& 8:00'					& 9:01					&						&	\\
+Student Ct. & 2 	& 4:30				& \fbox{647 \{3:00\}}	& 1:43					& 4:31					&						&	\\
+Main Lib 	& 3 	& 6:13				& 2:43					& \fbox{645 \{8:02\}}	& 2:48					&						&	\\
+Science Lib & 4 	& 9:01				& 7:18					& 2:48					& \fbox{ 925 \{ 6:28\}}	&						&	\\
+Cruciform 	& 5 	& 8:40				& 5:10					& 2:27					& 						& \fbox{ 326 \{2:08\}}	&	\\
+IoE 		& 6 	& 5:00'				& 5:00'					& 						& 						&						& \fbox{ 326 \{5:58\}}	\\
+Kings Cross	\space & 7 	& 9:01				&             			&   					& 						&						&	\\
+Warren St. 	& 8 	& 10:00'			& 						& 						& 						&						&	\\
+Russell Sq 	& 9 	& 7:37				& 						& 						& 						&						&					
+\end{tabular}
+\caption{Walking time data for campus locations \\ \footnotesize{Time to walk between locations. Where $i = j$ notation is ``total seats'' \{search time\} \\ ` indicates walking time taken from Google Maps}}
+\end{table}
+
+
+
+
+
+
+% table of trial data
+
+\begin{table}[]
+\centering
+\begin{tabular}{l|l|lllllll}
+ & Trial & 1 & 2 & 3 & 4 & 5 & 6 & \\ \hline
+  \parbox[t]{2mm}{\multirow{7}{*}{\rotatebox[origin=c]{90}{parameters}}} & step size & 10  & 10  & 10 & 10 & 10 & 10  \\
+ & work avg & 60 &  60 	& 60	& 60 & 60 & 60 \\
+ & students & 1000 & 1000 & 1000 & 2000 & 2000 & 2000 \\
+ & places & 5 & 5 & 5 & 10 & 10 & 10 \\
+ & spaces & 250 & 250 & 250 & 500 & 500 & 500 \\
+ & function & most & prox & perc & most & prox & perc \\
+ & trials & 5 & 5 & 5 & 5 & 5 & 5 \\ \hline
+\parbox[t]{2mm}{\multirow{3}{*}{\rotatebox[origin=c]{90}{results}}} & ticks & & & & & & \\
+ & efficiency & & & & & & \\
+  & runtime & & &  & & &
+\end{tabular}
+\caption{Results of various trial sets discussed}
+\end{table}
+
+
+
+
+\section{Conclusions}
+
+
+
+
+
+\section{Section 1}
+
+\begin{itemize}
+\item one
+\item two
+  \begin{itemize}
+  \item one point one
+  \item one point two
+  \end{itemize}
+\end{itemize}
+
+\subsection{Subsection 1}
+
+%\begin{figure}
+%\centering
+%\includegraphics[width=0.8\textwidth]{Corr_tube_graph_node_stats}
+%\caption{Correlation between station/node metrics}
+%\end{figure}
+
+\begin{tabular}{|l|l|l|l|}\hline
+  \multirow{10}{*}{numeric literals} 				& \multirow{5}{*}{integers} 	& in decimal 					& \verb|8743| \\ \cline{3-4}
+  					    				& 				       	& \multirow{2}{*}{in octal}   		& \verb|0o7464| \\ \cline{4-4}
+  					    				& 					& 						& \verb|0O103| \\ \cline{3-4}
+  					    				& 					& \multirow{2}{*}{in hexadecimal}	& \verb|0x5A0FF| \\ \cline{4-4}
+ 				 	    				& 					& 						& \verb|0xE0F2| \\ \cline{2-4}
+  					    				& \multirow{5}{*}{fractionals} 	& \multirow{5}{*}{in decimal} 		& \verb|140.58| \\ \cline{4-4}
+ 				 					& 					& 						& \verb|8.04e7| \\ \cline{4-4}
+  									& 					& 						& \verb|0.347E+12| \\ \cline{4-4}
+  									& 					& 						& \verb|5.47E-12| \\ \cline{4-4}
+  									& 					& 						& \verb|47e22| \\ \cline{1-4}
+  \multicolumn{3}{|l|}{\multirow{3}{*}{char literals}} 													& \verb|'H'| \\ \cline{4-4}
+  \multicolumn{3}{|l|}{} 																	& \verb|'\n'| \\ \cline{4-4}          %% here
+  \multicolumn{3}{|l|}{} 																	& \verb|'\x65'| \\ \cline{1-4}        %% here
+  \multicolumn{3}{|l|}{\multirow{2}{*}{string literals}} 												& \verb|"bom dia"| \\ \cline{4-4}
+  \multicolumn{3}{|l|}{} 																	& \verb|"ouro preto\nmg"| \\ \cline{1-4}          %% here
+\end{tabular}
+
+
+
+
+\begin{verbatim}
+use pseudocode
+\end{verbatim}
+
+\textit{italics}
+\textbf{bold}
+
+XXXX words excluding headings, figures, and references. \\
+
+\nocite{*}
+
+\medskip
+
+
+\printbibliography
+
+
+\end{document}
