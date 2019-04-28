@@ -1,0 +1,66 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.0 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nyt/global//global/global}
+    \entry{TasseronG.2017Upsr}{article}{}
+      \name{author}{2}{}{%
+        {{uniquename=0,uniquepart=base,hash=64024e413f9f30a1311fa7e490ea59f4}{%
+           family={Tasseron},
+           familyi={T\bibinitperiod},
+           given={G.},
+           giveni={G\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=2819427fd8c6508f6e68cd8d07676d77}{%
+           family={Martens},
+           familyi={M\bibinitperiod},
+           given={K.},
+           giveni={K\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier Ltd}%
+      }
+      \strng{namehash}{119711f452ec00493160f70d9b41c26f}
+      \strng{fullhash}{119711f452ec00493160f70d9b41c26f}
+      \strng{bibnamehash}{119711f452ec00493160f70d9b41c26f}
+      \strng{authorbibnamehash}{119711f452ec00493160f70d9b41c26f}
+      \strng{authornamehash}{119711f452ec00493160f70d9b41c26f}
+      \strng{authorfullhash}{119711f452ec00493160f70d9b41c26f}
+      \field{sortinit}{T}
+      \field{sortinithash}{6f7aff9db9dcfeb7f95fd5bbd2f78df9}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{The aim of this paper is to study the impacts of a reservation system for on-street parking. Such a system provides drivers looking for on-street parking with information on available parking spaces, thereby possibly reducing the need to cruise for parking and the accompanying negative externalities. The performance of the proposed system is studied using a highly detailed spatial agent-based simulation. The results of the simulations show that users of a reservation system benefit in terms of reduced search time and reduced walking distance under virtually all simulated circumstances. However, societal benefits are not as clear-cut. The benefit in search time for the users of the system comes at a cost to the regular drivers, which see a nearly identical increase in search time. In contrast, the positive impact on walking distance hardly influences walking distance for regular drivers. Hence, we conclude that the introduction of a reservation system for on-street parking results in a more efficient distribution of available parking spaces among drivers searching for parking.}
+      \field{issn}{01989715}
+      \field{journaltitle}{Computers, Environment and Urban Systems}
+      \field{title}{Urban parking space reservation through bottom-up information provision: An agent-based analysis}
+      \field{volume}{64}
+      \field{year}{2017}
+      \true{nocite}
+      \field{pages}{30\bibrangedash 41}
+      \range{pages}{12}
+      \keyw{Agent-Based System ; Intelligent Transportation System ; Parking ; Vehicle-to-Vehicle Communication ; Vehicular Ad-Hoc Network}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

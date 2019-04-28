@@ -82,8 +82,10 @@ The big difference between the parking models and the model I'm using is that on
 
 The PARKAGENT model is done in ArcGIS and can efficiently record distributions as well as averages. Search function focuses on intersections as nodes, prioritizing by proximity to final destination. Also, the model is focused on the trade-off between proximity to final destination and finding a space, so a driver might drive past a space if they estimate that a space closer to their final destination is available. 
 
+\section{Methodology}
 
-\section{Results}
+An agent based model was built in Netlogo and initially calibrated to approximate the distance, study space density, and student population of UCL. Table 1 contains the data for travel time between and search time within the major UCL study spaces. Important to note that search times range from 200 seats per minute in the Student center to 30 per minute in the Bartlett Library, and that a reasonably travel time diameter of campus is ~15 or 20 minutes walk. 
+
 
 % table of data about campus walking times and library search times
 
@@ -107,6 +109,20 @@ Russell Sq 		& 9 	& 7:37				& 10:00*				& 12:00*				& 10:00*				& 13:00*				& 3:
 \\ * indicates walking time taken from Google Maps}}
 \end{table}
 
+The first step was to find a minimum number of runs for parameters reasonably close to UCL characteristics. 
+
+The second step was to find the effect of scaling the model. Actual parameter values for UCL would be probably 50-75\% of the 40,000 enrolled students searching the roughly 4,000 study spaces across campus in order to do at least 1-2 hours of work. Runtimes for parameters of this magnitude were unfeasible so the model had to be scaled down, maintaining accurate ratio's where possible but reducing the number of students, spaces, places, and total work to be accomplished. Thus it was important to check multiple scales for a difference in outcomes. 
+
+Then the density of study spaces was changed, to investigate how dispersion affects search costs.
+
+Overall, the model was too large to allow for an actual parameter sweep, so the methodology above focused on investigating the key concerns about drawing conclusions from the model and the results below are discussed in this context. 
+
+
+\section{Results}
+
+The results are found in tables 2 through 5. The key value in each table is the number of ticks required for all work to be ``completed.'' In addition, ``efficiency'' is calculated, which is the total work completed, divided by the number of turtles in the trial, multiplied by the number of ticks the model ran for. This has the value of adjusting for differing total amounts of work due to the random initialization of work amounts specified by the mean of a uniform distribution. The ``function'' row indicates which search function was used in the trial. $Most$ indicates that the turtles prioritized their search by the absolute value of spaces in a given patch. $Prox$ indicates that turtles prioritized their search by the total distance to the patch, closest unsearched patches checked first. $Perc$ indicates that turtles searched patches by order of percentage of seats available. Please see the ODD material for specifics of the implementation of these search functions. Lastly, trial values from one run are never included in the values of another run, so that the sample statistics are not biased towards each other, they are independent except that they are produced by the same process subject to parameter changes. This is an important factor in interpreting tables 2, 3, and 4, where the minimum required runs is being considered. 
+
+
 
 
 
@@ -117,8 +133,8 @@ Russell Sq 		& 9 	& 7:37				& 10:00*				& 12:00*				& 10:00*				& 13:00*				& 3:
 \begin{table}[]
 \footnotesize
 \centering
-\begin{tabular}{l|l|ccccccc}
- & Trial & 1 & 2 & 3 & 4 & 5 & 6 & \\ \hline
+\begin{tabular}{l|l|ccc|ccc}
+ & Trial & 1 & 2 & 3 & 4 & 5 & 6  \\ \hline
   \parbox[t]{2mm}{\multirow{7}{*}{\rotatebox[origin=c]{90}{parameters}}} 
  & step size 	& 10  			& 10  			& 10 			& 10 					& 10 				& 10  \\
  & work avg 	& 60 			&  60 			& 60			& 60 					& 60 				& 60 \\
@@ -132,64 +148,140 @@ Russell Sq 		& 9 	& 7:37				& 10:00*				& 12:00*				& 10:00*				& 13:00*				& 3:
  & efficiency 	& 36\%			& 42\%			& 40\%				& 39\%				& 44\%				& 40\% \\
  & runtime (s) 	& 52.49			& 43.27			& 48.90				& 115.56			& 100.38			& 118.90
 \end{tabular}
-\caption{Parameters and results of various trial sets discussed \\ \footnotesize In results, value is ``$mean \pm margin \: of \: error$''}
+\caption{Parameters and results of various trial sets discussed \\ \footnotesize In results, tick value is ``$mean \pm margin \: of \: error$''}
+\end{table}
+
+
+
+%redo with 10 trials each
+
+\begin{table}[]
+\footnotesize
+\centering
+\begin{tabular}{l|l|ccc|ccc}
+ & Trial & 7 & 8 & 9 & 10 & 11 & 12  \\ \hline
+  \parbox[t]{2mm}{\multirow{7}{*}{\rotatebox[origin=c]{90}{parameters}}} 
+ & step size 	& 10  			& 10  			& 10 			& 10 					& 10 				& 10  \\
+ & work avg 	& 60 			&  60 			& 60			& 60 					& 60 				& 60 \\
+ & students 	& 1000 			& 1000 			& 1000 			& 2000 					& 2000 				& 2000 \\
+ & places 		& 5 			& 5 			& 5 			& 10 					& 10 				& 10 \\
+ & spaces 		& 250 			& 250 			& 250 			& 500 					& 500 				& 500 \\
+ & function 	& most 			& prox 			& perc 			& most 					& prox 				& perc \\
+ & trials 		& 10 			& 10 			& 10 			& 10 					& 10 				& 10 \\ \hline
+\parbox[t]{2mm}{\multirow{3}{*}{\rotatebox[origin=c]{90}{results}}} 
+ & ticks 		& $164.9\pm 14.8$ 	& $155.1\pm 21.7$ 	& $168.7\pm 15.4 $	& $153\pm 5.6 $	& $136\pm 3.7 $	& $154\pm 4.2$ \\
+ & efficiency 	& 36.4\%			& 38.5\%			& 35.7\%				& 39.1\%				& 43.7\%				& 39.1\% \\
+ & runtime (s) 	& 90.5			& 	93.8		& 	89.4			& 165.1			& 157.5			& 160.2
+\end{tabular}
+\caption{Parameters and results of trials continued \\ \footnotesize In results, tick value is ``$mean \pm margin \: of \: error$''}
+\end{table}
+
+
+% basic 1 and 2 for 20 trials
+
+\begin{table}[]
+\footnotesize
+\centering
+\begin{tabular}{l|l|ccc|ccc}
+ & Trial & 13 & 14 & 15 & 16 & 17 & 18  \\ \hline
+  \parbox[t]{2mm}{\multirow{7}{*}{\rotatebox[origin=c]{90}{parameters}}} 
+ & step size 	& 10  			& 10  			& 10 			& 10 					& 10 				& 10  \\
+ & work avg 	& 60 			&  60 			& 60			& 60 					& 60 				& 60 \\
+ & students 	& 1000 			& 1000 			& 1000 			& 2000 					& 2000 				& 2000 \\
+ & places 		& 5 			& 5 			& 5 			& 10 					& 10 				& 10 \\
+ & spaces 		& 250 			& 250 			& 250 			& 500 					& 500 				& 500 \\
+ & function 	& most 			& prox 			& perc 			& most 					& prox 				& perc \\
+ & trials 		& 20 			& 20 			& 20 			& 20 					& 20 				& 20 \\ \hline
+\parbox[t]{2mm}{\multirow{3}{*}{\rotatebox[origin=c]{90}{results}}} 
+ & ticks 		& $159.5\pm 7.8$ 	& $147.2\pm 4.9$ 	& $159.3\pm 5.7 $	& $153.5\pm 3.20 $	& $137.3\pm 1.90 $	& $152.55\pm 2.53$ \\
+ & efficiency 	& 37.7\%			& 40.7\%			& 37.8\%				& 39.1\%				& 43.8\%				& 39.4\% \\
+ & runtime (s) 	& 82.2			& 69.0			& 86.2				& 182.0			& 151.3			& 187.2
+\end{tabular}
+\caption{Parameters and results of trials continued \\ \footnotesize In results, tick value is ``$mean \pm margin \: of \: error$''}
 \end{table}
 
 
 
 
+%Basic 3 and 4 for 20 trials
+
+\begin{table}[]
+\footnotesize
+\centering
+\begin{tabular}{l|l|ccc|ccc}
+ & Trial & 19 & 20 & 21 & 22 & 23 & 24  \\ \hline
+  \parbox[t]{2mm}{\multirow{7}{*}{\rotatebox[origin=c]{90}{parameters}}} 
+ & step size 	& 10  			& 10  			& 10 			& 10 					& 10 				& 10  \\
+ & work avg 	& 30 			&  30 			& 30			& 30 					& 30 				& 30 \\
+ & students 	& 2000 			& 2000 			& 2000 			& 2000 					& 2000 				& 2000 \\
+ & places 		& 10 			& 10 			& 10 			& 10 					& 10 				& 10 \\
+ & spaces 		& 250 			& 250 			& 250 			& 100 					& 100 				& 100 \\
+ & function 	& most 			& prox 			& perc 			& most 					& prox 				& perc \\
+ & trials 		& 20 			& 20 			& 20 			& 20 					& 20 				& 20 \\ \hline
+\parbox[t]{2mm}{\multirow{3}{*}{\rotatebox[origin=c]{90}{results}}} 
+ & ticks 		& $114.7\pm 7.9$ 	& $88.4\pm 3.7 $ 	& $ 112\pm 6.5 $	& $193.6\pm 15.6 $	& $141.2\pm 6.3 $	& $199.4\pm 11.7 $ \\
+ & efficiency 	& 26.1\%			& 33.9\%		& 26.8\%			& 15.4\%			& 21.1\%			& 15.0\% \\
+ & runtime (s) 	& 112.5			& 89.9			& 119.4			& 186.0			& 119.9			& 194.1
+\end{tabular}
+\caption{Parameters and results of trials continued \\ \footnotesize In results, tick value is ``$mean \pm margin \: of \: error$''}
+\end{table}
+
+
+\begin{table}[]
+\footnotesize
+\centering
+\begin{tabular}{l|l|ccc|ccc}
+ & Trial & 25 & 26 & 27 & 28 & 29 & 30  \\ \hline
+  \parbox[t]{2mm}{\multirow{7}{*}{\rotatebox[origin=c]{90}{parameters}}} 
+ & step size 	& 10  			& 10  			& 10 			& 10 					& 10 				& 10  \\
+ & work avg 	& 30 			&  30 			& 30			& 30 					& 30 				& 30 \\
+ & students 	& 2000 			& 2000 			& 2000 			& 2000 					& 2000 				& 2000 \\
+ & places 		& 20 			& 20 			& 20 			& 30 					& 30 				& 30 \\
+ & spaces 		& 125 			& 125 			& 125 			& 83 					& 83 				& 83 \\
+ & function 	& most 			& prox 			& perc 			& most 					& prox 				& perc \\
+ & trials 		& 20 			& 20 			& 20 			& 20 					& 20 				& 20 \\ \hline
+\parbox[t]{2mm}{\multirow{3}{*}{\rotatebox[origin=c]{90}{results}}} 
+ & ticks 		& $138.8\pm 5.8$ 	& $92.3\pm 4.2 $ 	& $ 143.5\pm 6.2 $	& $175.3\pm 9.5 $	& $98.3\pm 5.9 $	& $177.4\pm 9.8 $ \\
+ & efficiency 	& 21.5\%		& 32.4\%		& 21.0\%			& 17.1\%		& 30.3\%		& 16.9\% \\
+ & runtime (s) 	& 142.1		&	93.5		& 	148.2		& 165.4			& 96.2			& 166.8
+\end{tabular}
+\caption{Parameters and results of trials continued \\ \footnotesize In results, tick value is ``$mean \pm margin \: of \: error$''}
+\end{table}
+
+
+\pagebreak
+
+\section{Analysis}
+
+The following is a series of observations drawn from tables 2 through 6, contextualized using the research question, model implementation and real world data. 
+
+First, in all of the trials, the margins of error for ticks required are higher than the author would prefer. This was limited by computing resources as each table took between 30 and 60 minutes to compute and computing time grew linearly with number of trials. Still, margins of error are small enough to allow for some basic conclusions to be drawn as follows. 
+
+Second, and most importantly, it cannot be concluded that information about the occupancy of a study location, like that provided by the UCL Go Study Space App,  improves on uninformed methods of search. 
+
+Third, proximity was, on average, the most efficient search method in every set of trials. 
+
+Fourth, results for the $most$ and $perc$ search functions are very similar. This is notable because of the way the model is implemented. Because at $tick \: 0$ occupancy of all patches is 0, turtles initially prioritize by the absolute value of study space in a patch. Thus at $tick \: 0$, $most$ and $perc$ are the same. It is only after at least one space has been occupied that the search functions diverge. Thus the differences in outcomes are driven by the results for turtles who do not find space at the first patch they search. This will be discussed in greater depth in the conclusions. 
+
+Fifth, comparing trial sets 19-21, 25-27, and 28-30 reveals the sensitivity of search time to the dispersion of study space over the environment. On average, the total study space in a trial is the number of places multiplied by the number of spaces (per place). Thus the three sets of trials increase the number of places, and decrease the number of spaces, holding total space roughly constant. As space becomes more distributed, turtles are on average, closer to study space anywhere in the environment, but can search fewer spaces in a given tick. In the results, it is clear that higher dispersion results in less efficient search for space with ticks required and efficiency falling as the dispersion increases. 
+
+Sixth, comparing margins of error for trials 1-3 with trials 4-6 and trials 7-9 with trials 10-12 and 13-15 with 16-18, a higher number of agents for the same number of trials reduces the margin of error. The ME's on the right are consistently smaller than those on the left of each table. to some extent a higher agent set gives more stable results. 
+
+Seventh, scaling the model up, moving closer to parameter values representative of UCL, increases the confidence allowed in the model outcome but does not change the overall results. Mean outcomes on the left and right sides of tables 2,3, and 4 are different but overall consistent, indicating that scaling the model down for computational reasons may not have had a negative effect on the reliability of it's predictions. 
+
+Eighth, XXXXXXXXXXXXXXXXXXXXX
+
+
+
 \section{Conclusions}
 
+Thus, the key conclusion of this investigation is that the UCL study space App may not have a material impact on search times for study space while working towards more tightly clustered study spaces at major points across campus probably would reduce study times. This is reflected in the fact that search times for the newly built Student Center are better than for older places like the highly distributed space in the Main Library, the architecture of the university is slowly improving the student experience. 
 
 
+As mentioned above, a key unrealistic feature of this model is that all agents arrive simultaneously. This heavily emphasizes the search behavior at $tick \: 0$, which for $most$ and $perc$ are the same. A model that included stochastically determined arrival time or number may allow for greater differentiation between the two search functions. 
 
+Finally, further work on the effect of scaling a model of this nature would be valuable. it is hypothesized that scaling may begin to distort model conclusions as scale approached the zero lower bound in the sense that it would begin to be difficult to maintain ratios of spaces per environment distance, or students to space.  
 
-\section{Section 1}
-
-\begin{itemize}
-\item one
-\item two
-  \begin{itemize}
-  \item one point one
-  \item one point two
-  \end{itemize}
-\end{itemize}
-
-\subsection{Subsection 1}
-
-%\begin{figure}
-%\centering
-%\includegraphics[width=0.8\textwidth]{Corr_tube_graph_node_stats}
-%\caption{Correlation between station/node metrics}
-%\end{figure}
-
-\begin{tabular}{|l|l|l|l|}\hline
-  \multirow{10}{*}{numeric literals} 				& \multirow{5}{*}{integers} 	& in decimal 					& \verb|8743| \\ \cline{3-4}
-  					    				& 				       	& \multirow{2}{*}{in octal}   		& \verb|0o7464| \\ \cline{4-4}
-  					    				& 					& 						& \verb|0O103| \\ \cline{3-4}
-  					    				& 					& \multirow{2}{*}{in hexadecimal}	& \verb|0x5A0FF| \\ \cline{4-4}
- 				 	    				& 					& 						& \verb|0xE0F2| \\ \cline{2-4}
-  					    				& \multirow{5}{*}{fractionals} 	& \multirow{5}{*}{in decimal} 		& \verb|140.58| \\ \cline{4-4}
- 				 					& 					& 						& \verb|8.04e7| \\ \cline{4-4}
-  									& 					& 						& \verb|0.347E+12| \\ \cline{4-4}
-  									& 					& 						& \verb|5.47E-12| \\ \cline{4-4}
-  									& 					& 						& \verb|47e22| \\ \cline{1-4}
-  \multicolumn{3}{|l|}{\multirow{3}{*}{char literals}} 													& \verb|'H'| \\ \cline{4-4}
-  \multicolumn{3}{|l|}{} 																	& \verb|'\n'| \\ \cline{4-4}          %% here
-  \multicolumn{3}{|l|}{} 																	& \verb|'\x65'| \\ \cline{1-4}        %% here
-  \multicolumn{3}{|l|}{\multirow{2}{*}{string literals}} 												& \verb|"bom dia"| \\ \cline{4-4}
-  \multicolumn{3}{|l|}{} 																	& \verb|"ouro preto\nmg"| \\ \cline{1-4}          %% here
-\end{tabular}
-
-
-
-
-\begin{verbatim}
-use pseudocode
-\end{verbatim}
-
-\textit{italics}
-\textbf{bold}
 
 XXXX words excluding headings, figures, and references. \\
 

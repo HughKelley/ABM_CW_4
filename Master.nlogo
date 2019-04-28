@@ -155,9 +155,9 @@ to initialize
 
   set itinerary (patches with [space > 0])
 
-;   set itinerary perc-taken itinerary
 ;   set itinerary most itinerary
-   set itinerary proximity itinerary
+;   set itinerary proximity itinerary
+   set itinerary perc-taken itinerary
 
   ; this doesn't work because run result can't use arguments to the reporter if the reporter is a string
   ;set itinerary (runresult search-type itinerary) ;
@@ -268,9 +268,9 @@ to move
           ; set itinerary most itinerary
           set itinerary (patches with [space > 0])
 
-;          set itinerary perc-taken itinerary
 ;          set itinerary most itinerary
-          set itinerary proximity itinerary
+;          set itinerary proximity itinerary
+          set itinerary perc-taken itinerary
 
           ; runresult doens't accept parameter arguments
           ;set itinerary (runresult search-type itinerary)
@@ -494,7 +494,7 @@ spaces
 spaces
 0
 5000
-500.0
+83.0
 1
 1
 NIL
@@ -509,7 +509,7 @@ places
 places
 0
 50
-10.0
+30.0
 1
 1
 NIL
@@ -539,7 +539,7 @@ work-mean
 work-mean
 0
 500
-60.0
+30.0
 10
 1
 NIL
@@ -648,41 +648,138 @@ NIL
 1
 
 @#$#@#$#@
-## WHAT IS IT?
+## Overview
 
-(a general understanding of what the model is trying to show or explain)
+### Purpose (1)
 
-## HOW IT WORKS
+This model uses assumptions about how students search for study space and information from the UCL campus to build an environment for studying how information changes search costs. It is inspired by the UCLGo study space app.
 
-(what rules the agents use to create the overall behavior of the model)
 
-## HOW TO USE IT
+### Entities state variables and scales (2)
 
-(how to use the model, including a description of each of the items in the Interface tab)
+The model consists of students, study space patches in the center of the environment and tube stops around the perimeter.
 
-## THINGS TO NOTICE
+#### Each student has
+number of ticks they must occupy a study space.
+boolean state that is either ``studying" or ``searching''.
+a target location that they intend to search next. 
+an origin location they come from and return to.
 
-(suggested things for the user to notice while running the model)
+#### Each patch has 
+a capacity
+a current occupancy value
 
-## THINGS TO TRY
+The size of the environment will reflect the travel times across UCL relative to the density of study spaces. For example, walking from Russell Square Station to Warren Street Station (the diameter of campus) takes about 15 minutes while a student can view majority of the 647 study spaces in the new Student Centre in about 6 minutes. Thus turtles should traverse the environment in 15 ticks and search 100 spaces per tick. 
 
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
+Thus calibration involves matching travel time to library-patch density to spaces per individual patch.
 
-## EXTENDING THE MODEL
+### Process overview and scheduling (3)
 
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
 
-## NETLOGO FEATURES
+    for each turtle: 
+        if work-remaining > 0:
+            if state-boolean != studying:
+                if target-patch == NULL:
+                    set target study patch according to search function
+                    set heading toward that patch
+                    move (<=  one "step")  toward target-patch
+                else:
+                    move (<=  one "step")  toward target-patch                
+    
+                if turtle current patch == a study patch: 
+                    if other turtles on current  patch < patch-capacity:
+                        boolean = studying
+                        patch-occupancy = patch-occupancy + 1
+            else:
+                set turtle work-remaining = work remaining - 1
+        else: 
+            if current patch == origin patch: 
+                turtle die
+            else:         
+                set headin and target-patchg to origin tube station
+                take max step 
 
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
 
-## RELATED MODELS
 
-(models in the NetLogo Models Library and elsewhere which are of related interest)
 
-## CREDITS AND REFERENCES
 
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+#### Design choices include: 
+
+The boolean allows a turtle to occupy a patch in order to search it without the program treating it as a studying turtle. 
+
+Applying each step above to one turtle at a time allows a turtle to  occupy a space that has been left by another turtle earlier in the  procedure for that same tick. 
+
+Turtle action is ordered according to Netlogo default. This affects the search time for an individual turtle (earlier moving turtles are ``luckier") but it is not a factor on system outcomes as the distribution of search times across turtles is not of interest.
+
+
+Turtles never wait for space to become available on a patch, students have not been observed waiting, as any waiting space becomes informal study space. 
+
+
+## Design Concepts (4)
+
+#### Basic principles
+
+The basic concept is a comparison basic and informed search methods. 
+
+A model without explicit space could serve this investigation, adding times according to turtle choice. However,  to think through the design process and illustrate the search and distribution of study space relative to travel, the model does use explicit space.
+
+Reviewing literature for the research proposal found little information on relevant search methods in ABM.  This investigation therefore uses a comparison of different methods (detailed in 3.2 Submodels) to establish which base method should be compared to the method incorporating additional information. Across parameter values, outcomes for models with all turtles using one of the various methods will be compared.
+
+#### Emergence
+
+There is little or no emergence in this model. Incomplete occupancy has been observed in the sense that even at peak times at central study areas not all seats are taken. It is thought that this is an emergent phenomenon in the sense that it is a result of social norms about personal space and control of resources. A good search function would reproduce this but the author has not been able to concieve of a mechanism, without writing the result into the code explicitly in the form of a heuristic or error term.
+
+#### Prediction
+
+The additional information model could increase search times by directing all turtles to patches that will be occupied before they arrive. In the model and real life, agents have to predict if current space will be occupied when they arrive. Perhaps the search function should be a function of space available and relative distance. 
+
+#### Interaction
+
+Interaction occurs through competition for study space, turtles can occupy any of the same patches in the environment and information is not shared between turtles.  
+
+#### Stochasticity
+
+The distribution of study space will be set stochastically according to averages set by the user according to empirical observations of a real space like UCL. This will take the form of a specified number of clusters of individual patches each with a random capacity. 
+
+For example, a model could have 6 clusters, with a number of patches taken randomly from a poisson distribution with $\lambda$ = 10, where each patch has capacity taken from a poisson distribution with  $\lambda$ = 30. This would give an average model run with 300 spaces per cluster on average and 1,800 spaces total. Calibrating this part of the model is a key part of th empirical investigation of UCL study space distribution. 
+
+Turtles will be initialized with a random amount of work to accomplish following a Poisson distribution and at a randomly selected location taken from the set of tube station locations according to a uniform distribution. The Poisson distribution is specified based on the meaninglessness of negative values across the system but there is no empirical basis for assuming that the mean of any of the parameters should equal the variance. 
+
+#### Observation
+
+Values collected each run are: 
+- total study time completed
+- total turtle search time
+- total turtle distance traveled
+
+#### Values collected for each tick are:
+- turtle study time remaining
+- turtle study time completed
+- % study space occuppied
+
+
+## Details
+
+#### Initialization (5)
+
+Library patches and capacities are distributed as described in the section on stochastic processes. 
+
+A number of turtles sprout at one of five ``tube station'' origins with a randomly assigned amount of work. 
+
+The warm up period required to reach equillibrium where all work is completed and turtles have returned to origin is the period of interest. 
+
+
+### Submodels (7)
+
+#### Various search functions are used. 
+
+- biggest to smallest
+- nearest to farthest 
+- percentage available
+
+To move, a while loop is used which continues to loop and add one to the counter until the "step-size" parameter has been reached or the turtle has arrived at a study patch, ending the loop. 
+
+Turtles decide their destination at tick 0 and then each time they reach a destination without study space. Only on these ticks is the search function used so they do not change course on the way to a given patch. 
 @#$#@#$#@
 default
 true
@@ -1040,7 +1137,32 @@ NetLogo 6.0.4
       <value value="180"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="Basic 1" repetitions="5" sequentialRunOrder="false" runMetricsEveryStep="true">
+  <experiment name="Basic 2" repetitions="20" sequentialRunOrder="false" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="100000"/>
+    <metric>timer</metric>
+    <metric>total-occupants</metric>
+    <metric>total-space</metric>
+    <metric>work-done</metric>
+    <metric>total-work</metric>
+    <enumeratedValueSet variable="step-size">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="spaces">
+      <value value="500"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="students">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="places">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="work-mean">
+      <value value="60"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="Basic 1" repetitions="20" sequentialRunOrder="false" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <timeLimit steps="100000"/>
@@ -1065,7 +1187,7 @@ NetLogo 6.0.4
       <value value="60"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="Basic 2" repetitions="5" sequentialRunOrder="false" runMetricsEveryStep="true">
+  <experiment name="Basic 3" repetitions="20" sequentialRunOrder="false" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <timeLimit steps="100000"/>
@@ -1078,7 +1200,7 @@ NetLogo 6.0.4
       <value value="10"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="spaces">
-      <value value="500"/>
+      <value value="250"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="students">
       <value value="2000"/>
@@ -1087,7 +1209,82 @@ NetLogo 6.0.4
       <value value="10"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="work-mean">
-      <value value="60"/>
+      <value value="30"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="Basic 4" repetitions="20" sequentialRunOrder="false" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="100000"/>
+    <metric>timer</metric>
+    <metric>total-occupants</metric>
+    <metric>total-space</metric>
+    <metric>work-done</metric>
+    <metric>total-work</metric>
+    <enumeratedValueSet variable="step-size">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="spaces">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="students">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="places">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="work-mean">
+      <value value="30"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="Basic 5" repetitions="20" sequentialRunOrder="false" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="100000"/>
+    <metric>timer</metric>
+    <metric>total-occupants</metric>
+    <metric>total-space</metric>
+    <metric>work-done</metric>
+    <metric>total-work</metric>
+    <enumeratedValueSet variable="step-size">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="spaces">
+      <value value="125"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="students">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="places">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="work-mean">
+      <value value="30"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="Basic 6" repetitions="20" sequentialRunOrder="false" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="100000"/>
+    <metric>timer</metric>
+    <metric>total-occupants</metric>
+    <metric>total-space</metric>
+    <metric>work-done</metric>
+    <metric>total-work</metric>
+    <enumeratedValueSet variable="step-size">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="spaces">
+      <value value="83"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="students">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="places">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="work-mean">
+      <value value="30"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
