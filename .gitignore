@@ -7,3 +7,5 @@
 *.xml
 *.gz
 *.csv#
+*.bbl
+*.blg
