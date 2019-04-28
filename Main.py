@@ -23,8 +23,8 @@ basic_1_prox_data = pd.read_csv(basic_1_prox, header = 6)
 basic_1_perc_data = pd.read_csv(basic_1_perc, header = 6)
 
 basic_2_most_data = pd.read_csv(basic_2_most, header = 6)
-basic_2_prox_data = pd.read_csv(basic_2_most, header = 6)
-basic_2_perc_data = pd.read_csv(basic_2_most, header = 6)
+basic_2_prox_data = pd.read_csv(basic_2_prox, header = 6)
+basic_2_perc_data = pd.read_csv(basic_2_perc, header = 6)
 
 
 list(basic_1_most_data)
@@ -37,25 +37,69 @@ for df in list_of_dfs :
     df['percentage_work_completed'] = df['work_finished'] / df['total_work'] * 100
     df['occupancy_rate'] = df['total_occupants'] / df['spaces'] * 100
     
-# add function type
     
+# add different fucntion data to same dataframe
+# for basic 1 trials    
+    
+# add function type
 basic_1_most_data['type'] = "most"
 basic_1_prox_data['type'] = "prox"
 basic_1_perc_data['type'] = "perc"
+
+all_data_1 = basic_1_most_data.set_index(['type', 'step_size','spaces','students','places','work-mean','time','total_occupants','total_spaces','work_finished','total_work']).groupby('run_number')['step'].nlargest(1).reset_index()
+holder2 = basic_1_prox_data.set_index(['type', 'step_size','spaces','students','places','work-mean','time','total_occupants','total_spaces','work_finished','total_work']).groupby('run_number')['step'].nlargest(1).reset_index()
+holder3 = basic_1_perc_data.set_index(['type', 'step_size','spaces','students','places','work-mean','time','total_occupants','total_spaces','work_finished','total_work']).groupby('run_number')['step'].nlargest(1).reset_index()
+
+# append
+all_data_1 = all_data_1.append([holder2, holder3])
+
+
+
+# add different fucntion data to same dataframe
+# for basic 2 trials    
+    
+# add function type
 
 basic_2_most_data['type'] = "most"
 basic_2_prox_data['type'] = "prox"
 basic_2_perc_data['type'] = "perc"
 
-all_data_1 = basic_1_most_data.set_index(['type', 'step_size','spaces','students','places','work-mean','time','total_occupants','total_spaces','work_finished','total_work']).groupby('run_number')['step'].nlargest(1).reset_index()
+all_data_2 = basic_2_most_data.set_index(['type', 'step_size','spaces','students','places','work-mean','time','total_occupants','total_spaces','work_finished','total_work']).groupby('run_number')['step'].nlargest(1).reset_index()
+holder4 = basic_2_prox_data.set_index(['type', 'step_size','spaces','students','places','work-mean','time','total_occupants','total_spaces','work_finished','total_work']).groupby('run_number')['step'].nlargest(1).reset_index()
+holder5 = basic_2_perc_data.set_index(['type', 'step_size','spaces','students','places','work-mean','time','total_occupants','total_spaces','work_finished','total_work']).groupby('run_number')['step'].nlargest(1).reset_index()
 
-holder = basic_1_most_data.set_index(['type', 'step_size','spaces','students','places','work-mean','time','total_occupants','total_spaces','work_finished','total_work']).groupby('run_number')['step'].nlargest(1).reset_index()
+# append
+all_data_2 = all_data_2.append([holder4, holder5])
 
 
-# for each dataframe, need to extract for each run, the values at the max tick. 
+#For both datafarmes get mean and std for ticks
+
+basic_1_means = all_data_1.groupby(['type']).mean()
+basic_2_means = all_data_2.groupby(['type']).mean()
+basic_1_stds = all_data_1.groupby(['type']).std()
+basic_2_stds = all_data_2.groupby(['type']).std()
+
+
+basic_1_data = basic_1_means[['step', 'time', 'students', 'work_finished']]
+basic_1_data['efficiency'] = basic_1_data['work_finished'] / (basic_1_data['students'] * basic_1_data['step'])
+
+
+
+basic_1_stds['sqrt_n'] = (5.0)**0.5
+basic_1_stds['crit_val'] = 1.533
+basic_1_stds['ME'] = basic_1_stds['crit_val'] * basic_1_stds['step'] / basic_1_stds['sqrt_n']
     
-    
-    
+# for basic 2
+
+
+basic_2_data = basic_2_means[['step', 'time', 'students', 'work_finished']]
+basic_2_data['efficiency'] = basic_2_data['work_finished'] / (basic_2_data['students'] * basic_2_data['step'])
+
+basic_2_stds['sqrt_n'] = (5.0)**0.5
+basic_2_stds['crit_val'] = 1.533
+basic_2_stds['ME'] = basic_2_stds['crit_val'] * basic_2_stds['step'] / basic_2_stds['sqrt_n']
+ 
+
 
 
 
