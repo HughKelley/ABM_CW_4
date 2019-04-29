@@ -659,15 +659,34 @@ This model uses assumptions about how students search for study space and inform
 
 The model consists of students, study space patches in the center of the environment and tube stops around the perimeter.
 
+#### Global variables include
+
+input:
+- step-size
+- places
+- spaces
+- work-mean
+- number of students
+- search function type   ; this was altered manually for computational efficiency
+
+output:
+- work-done
+- total-space
+- total-occupants
+- total-work
+
+
 #### Each student has
 number of ticks they must occupy a study space.
-boolean state that is either ``studying" or ``searching''.
+boolean state that is either "studying" or "searching''.
 a target location that they intend to search next. 
 an origin location they come from and return to.
+an "itinerary" agentset sorted by the search function being used
 
 #### Each patch has 
 a capacity
 a current occupancy value
+a ratio of occupants to space
 
 The size of the environment will reflect the travel times across UCL relative to the density of study spaces. For example, walking from Russell Square Station to Warren Street Station (the diameter of campus) takes about 15 minutes while a student can view majority of the 647 study spaces in the new Student Centre in about 6 minutes. Thus turtles should traverse the environment in 15 ticks and search 100 spaces per tick. 
 
@@ -709,6 +728,8 @@ The boolean allows a turtle to occupy a patch in order to search it without the 
 
 Applying each step above to one turtle at a time allows a turtle to  occupy a space that has been left by another turtle earlier in the  procedure for that same tick. 
 
+Importantly, the first action of each turtle's movement each tick is to update patch variables to reflect any actions of turtles moving earlier in that tick. 
+
 Turtle action is ordered according to Netlogo default. This affects the search time for an individual turtle (earlier moving turtles are ``luckier") but it is not a factor on system outcomes as the distribution of search times across turtles is not of interest.
 
 
@@ -731,7 +752,7 @@ There is little or no emergence in this model. Incomplete occupancy has been obs
 
 #### Prediction
 
-The additional information model could increase search times by directing all turtles to patches that will be occupied before they arrive. In the model and real life, agents have to predict if current space will be occupied when they arrive. Perhaps the search function should be a function of space available and relative distance. 
+The additional information model could increase search times by directing all turtles to patches that will be occupied before they arrive. In the model and real life, agents have to predict if current space will be occupied when they arrive.
 
 #### Interaction
 
@@ -739,18 +760,19 @@ Interaction occurs through competition for study space, turtles can occupy any o
 
 #### Stochasticity
 
-The distribution of study space will be set stochastically according to averages set by the user according to empirical observations of a real space like UCL. This will take the form of a specified number of clusters of individual patches each with a random capacity. 
+The distribution of study space will be set stochastically according to averages set by the user according to empirical observations of a real space like UCL. This will take the form of a specified number of clusters of individual patches each with a random capacity.
 
-For example, a model could have 6 clusters, with a number of patches taken randomly from a poisson distribution with $\lambda$ = 10, where each patch has capacity taken from a poisson distribution with  $\lambda$ = 30. This would give an average model run with 300 spaces per cluster on average and 1,800 spaces total. Calibrating this part of the model is a key part of th empirical investigation of UCL study space distribution. 
+For example, a model could have 6 clusters, with a number of patches taken randomly from a uniform distribution with an average number of spaces set by the user to 30, resulting in an average model run with 6 x 30 = 240 spaces total. Each patches space is set independently though so it would not normally be the case that this estimate would be exact. 
 
-Turtles will be initialized with a random amount of work to accomplish following a Poisson distribution and at a randomly selected location taken from the set of tube station locations according to a uniform distribution. The Poisson distribution is specified based on the meaninglessness of negative values across the system but there is no empirical basis for assuming that the mean of any of the parameters should equal the variance. 
+Turtles will be initialized with a random amount of work to accomplish following a uniform distribution with a mean set by the user. 
 
 #### Observation
 
 Values collected each run are: 
 - total study time completed
 - total turtle search time
-- total turtle distance traveled
+- total number of turtles
+- total study space
 
 #### Values collected for each tick are:
 - turtle study time remaining
@@ -764,7 +786,7 @@ Values collected each run are:
 
 Library patches and capacities are distributed as described in the section on stochastic processes. 
 
-A number of turtles sprout at one of five ``tube station'' origins with a randomly assigned amount of work. 
+Four fifths of turtles sprout at one of four ``tube station'' origins while the rest sprout randomly across the environment. All are assigned a random amount of work. 
 
 The warm up period required to reach equillibrium where all work is completed and turtles have returned to origin is the period of interest. 
 
@@ -773,11 +795,11 @@ The warm up period required to reach equillibrium where all work is completed an
 
 #### Various search functions are used. 
 
-- biggest to smallest
-- nearest to farthest 
-- percentage available
+- biggest to smallest absolute value of study space 
+- nearest to farthest from individual turtle at its current location
+- percentage available with ties broken by absolute number available.
 
-To move, a while loop is used which continues to loop and add one to the counter until the "step-size" parameter has been reached or the turtle has arrived at a study patch, ending the loop. 
+To move, a while loop is used which continues to loop and add one to the counter until the counter equals the "step-size" parameter or the turtle has arrived at a study patch, ending the loop. 
 
 Turtles decide their destination at tick 0 and then each time they reach a destination without study space. Only on these ticks is the search function used so they do not change course on the way to a given patch. 
 @#$#@#$#@

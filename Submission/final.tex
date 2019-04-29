@@ -78,11 +78,11 @@ Reservation systems alter the dynamics of the search for parking space \parencit
 
 \section{Methodology}
 
-An agent based model was built in Netlogo and calibrated to approximate the distance, study space density, and  population of UCL. Table 1 contains the data for travel time between and search time within major UCL study spaces. Search times range from 200 seats per minute in the Student center to 30 per minute in the Bartlett Library/ The diameter of campus is 15 or 20 minutes walking. 
+An agent based model was built in Netlogo and calibrated to approximate the distance, study space density, and  population of UCL. Table 1 contains the data for travel time between and search time within major UCL study spaces. Search times range from 200 seats per minute in the Student center to 30 per minute in the Bartlett Library. The diameter of campus is 15 or 20 minutes walking. 
 
-First, a minimum number of runs for parameters like UCL characteristics was found. 
+First, a minimum number of runs for UCL like parameters was found. 
 
-Then effect of scaling the model was considered. Actual parameter values for UCL would be probably 50-75\% of the 40,000 enrolled students searching the roughly 4,000 study spaces across campus in order to do at least 1-2 hours of work. Parameters of this magnitude were unfeasible so the model was scaled down, maintaining accurate ratio's where possible but reducing the number of students, spaces, places, and total work. Thus it was important to compare scales. 
+Then the effect of scaling the model was considered. Actual parameter values for UCL would be probably 50-75\% of the 40,000 enrolled students searching the roughly 4,000 study spaces across campus in order to do at least 1-2 hours of work. Parameters of this magnitude were unfeasible so the model was scaled down, maintaining accurate ratios where possible, but reducing the number of students, spaces, places, and total work. Thus it was important to compare scales. 
 
 To investigate dispersion's effect search costs, density was changed.
 
@@ -112,7 +112,7 @@ Russell Sq 		& 9 	& 7:37				& 10:00*				& 12:00*				& 10:00*				& 13:00*				& 3:
 
 \section{Results}
 
-Results are found in tables 2-5. The key value in each table is the number of ticks required for all work to be ``completed.'' ``Efficiency'' is calculated, which is:  total work completed, / number of turtles X total ticks. This has the value of adjusting for differing total amounts of work due to the random initialization of work amounts. $Function$ indicates how agents searched for space. $Most$, agents searched by absolute value of spaces. $Prox$, agents searched by total distance to the patch. $Perc$ agents searched by percentage of seats available. The ODD and code includes implementation specifics. Lastly, trial values from one run are never included in the values of another run, so that the sample statistics are not biased towards each other. This is important for interpreting tables 2, 3, and 4, where  minimum required runs is considered. 
+Results are found in tables 2-5. The key value in each table is the number of ticks required for all work to be ``completed.'' ``Efficiency'' is calculated, which is:  total work completed, / number of turtles X total ticks. This has the value of adjusting for differing total amounts of work due to the random initialization of work amounts. $Function$ indicates how agents searched for space. $Most$, agents searched by absolute value of spaces. $Prox$, agents searched by proximity, total distance to the patch. $Perc$, agents searched by percentage of seats available. The ODD and code includes implementation specifics. Lastly, values from one trial set are never included in the values of another, so that the sample statistics are not biased towards each other. This is important for interpreting tables 2, 3, and 4, where  minimum required runs is considered. 
 
 % table of trial data
 
@@ -239,7 +239,7 @@ Second, in all trial sets, margins of error are unfortunately high. This was lim
 
 Third, proximity was, on average, the most efficient  method in every trial set. 
 
-Fourth, results for the $most$ and $perc$ search functions are very similar. Using $perc$ agents initially prioritize by the absolute value of study space in a patch because at $tick \: 0$ occupancy of all patches is 0.  The search functions diverge only after one space has been occupied. Thus the differences in outcomes are driven by the results for turtles who do not find space at the first patch searched. 
+Fourth, results for the $most$ and $perc$ search functions are very similar. Using $perc$, agents initially prioritize by the absolute value of study space in a patch because at $tick \: 0$ occupancy of all patches is 0.  The search functions diverge only after one space has been occupied. Thus the differences in outcomes are driven by the results for turtles who do not find space at the first patch searched. 
 
 Fifth, comparing trial sets 19-21, 25-27, and 28-30 reveals the sensitivity of search time to the dispersion of study space. The total study space in a trial is the places parameter X spaces parameter. Thus the three sets of trials increase the number of places, and decrease the number of spaces, holding the total constant. Agents are on average, closer to study space anywhere in the environment, but search fewer spaces in a given tick when space is more distributed. It is clear that higher dispersion means less efficient search with ticks rising as dispersion increases. 
 
@@ -249,7 +249,7 @@ Finally, scaling the model up, moving closer to parameter values representative 
 
 \section{Conclusions}
 
-The key conclusion is that the UCL Study Space App may not have a material impact on search times for study space , whereas more tightly clustered study spaces may improve efficiency. AS search times for the newly built Student Center are better than for older places like the highly distributed space in the Main Library, the architecture of the university is improving the student experience. 
+The key conclusion is that the UCL Study Space App may not have a material impact on search times for study space , whereas more tightly clustered study spaces may improve efficiency. As search times for the newly built Student Center are better than for older places like the highly distributed space in the Main Library, the architecture of the university is improving the student experience. 
 
 As mentioned above, a key unrealistic feature of this model is agents arriving simultaneously. This heavily emphasizes the search behavior at $tick \: 0$, which for $most$ and $perc$ are the same. A model that included stochastically determined arrival time may allow for greater differentiation between the two search functions. 
 
